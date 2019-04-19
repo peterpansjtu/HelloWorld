@@ -215,6 +215,19 @@
       </rect>
      </property>
     </widget>
+    <widget class="QPushButton" name="connect_button">
+     <property name="geometry">
+      <rect>
+       <x>392</x>
+       <y>77</y>
+       <width>121</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>连接</string>
+     </property>
+    </widget>
    </widget>
    <widget class="QWidget" name="io_tab">
     <attribute name="title">
