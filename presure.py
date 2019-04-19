@@ -9,6 +9,7 @@ import numpy as np
 import random
 
 import ui_main
+import plc_control
 
 class Figure_Canvas(FigureCanvas):
 
@@ -41,8 +42,12 @@ class presure_ui(QDialog):
     def __init__(self):
         super(presure_ui, self).__init__()
 
+        self.plc = plc_control.plc_control('localhost', 12345)
+
         self.main_ui = ui_main.Ui_Dialog()
         self.main_ui.setupUi(self)
+
+        self.main_ui.reset_button.clicked.connect(self.reset_clicked)
 
         self.graphicscene = QGraphicsScene()
         self.main_ui.pressure_view.setScene(self.graphicscene)
@@ -63,11 +68,14 @@ class presure_ui(QDialog):
 
     def timeout(self):
         self.x += int(self.interval / 1000)
-        y = random.randint(1, 10)
+        #y = random.randint(1, 10)
+        y = self.plc.get(1)
         self.dr.update_presure(self.x, y)
         self.graphicscene.addWidget(self.dr)
         self.main_ui.pressure_view.show()
 
+    def reset_clicked(self):
+        self.plc.set(1, 0)
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
