@@ -53,9 +53,7 @@ class presure_ui(QDialog):
         '''
         self.graphic_scene = QGraphicsScene()
         self.ui.pressure_view.setScene(self.graphic_scene)
-        '''
-        FIXME: figure size should be handled better
-        '''
+        # FIXME: figure size should be handled better
         figure_size = (self.ui.pressure_view.width() / 110, self.ui.pressure_view.height() / 110)
         self.chart = Figure_Canvas(figure_size)
 
