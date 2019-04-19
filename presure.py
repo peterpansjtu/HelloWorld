@@ -1,5 +1,4 @@
 import sys
-import ui_main
 from PyQt5.QtWidgets import QDialog, QApplication, QGraphicsScene
 from PyQt5.QtCore import QTimer
 import matplotlib
@@ -8,6 +7,8 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 import numpy as np
 import random
+
+import ui_main
 
 class Figure_Canvas(FigureCanvas):
 
