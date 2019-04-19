@@ -6,22 +6,50 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1237</width>
-    <height>821</height>
+    <width>1389</width>
+    <height>894</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
-  <widget class="QGraphicsView" name="pressureView">
+  <widget class="QTabWidget" name="tabs">
    <property name="geometry">
     <rect>
-     <x>590</x>
-     <y>60</y>
-     <width>591</width>
-     <height>551</height>
+     <x>0</x>
+     <y>0</y>
+     <width>1391</width>
+     <height>891</height>
     </rect>
    </property>
+   <property name="currentIndex">
+    <number>0</number>
+   </property>
+   <widget class="QWidget" name="main_tab">
+    <attribute name="title">
+     <string>主界面</string>
+    </attribute>
+    <widget class="QGraphicsView" name="pressure_view">
+     <property name="geometry">
+      <rect>
+       <x>580</x>
+       <y>60</y>
+       <width>791</width>
+       <height>551</height>
+      </rect>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QWidget" name="io_tab">
+    <attribute name="title">
+     <string>输入/输出</string>
+    </attribute>
+   </widget>
+   <widget class="QWidget" name="set_tab">
+    <attribute name="title">
+     <string>参数设定</string>
+    </attribute>
+   </widget>
   </widget>
  </widget>
  <resources/>

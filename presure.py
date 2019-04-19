@@ -11,8 +11,8 @@ import random
 
 class Figure_Canvas(FigureCanvas):
 
-    def __init__(self, size, parent=None, dpi=100):
-        self.figure = Figure(figsize=(6, 5), dpi=dpi)
+    def __init__(self, size, parent = None, dpi = 100):
+        self.figure = Figure(figsize = size, dpi = dpi)
 
         FigureCanvas.__init__(self, self.figure)
         self.setParent(parent)
@@ -44,10 +44,11 @@ class presure_ui(QDialog):
         self.main_ui.setupUi(self)
 
         self.graphicscene = QGraphicsScene()
-        self.main_ui.pressureView.setScene(self.graphicscene)
-        print(self.main_ui.pressureView.viewport().size().width())
-        print(self.main_ui.pressureView.viewport().size().height())
-        figure_size = (self.main_ui.pressureView.viewport().width(), self.main_ui.pressureView.viewport().height())
+        self.main_ui.pressure_view.setScene(self.graphicscene)
+        '''
+        FIXME: figure size should be handled better
+        '''
+        figure_size = (self.main_ui.pressure_view.width() / 110, self.main_ui.pressure_view.height() / 110)
         self.dr = Figure_Canvas(figure_size)
 
         self.x = 0;
@@ -64,7 +65,7 @@ class presure_ui(QDialog):
         y = random.randint(1, 10)
         self.dr.update_presure(self.x, y)
         self.graphicscene.addWidget(self.dr)
-        self.main_ui.pressureView.show()
+        self.main_ui.pressure_view.show()
 
 
 if __name__ == '__main__':
