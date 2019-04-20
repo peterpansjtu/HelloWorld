@@ -6,6 +6,7 @@ from PyQt5.QtWidgets import QDialog, QApplication, QGraphicsScene
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 from matplotlib.figure import Figure
 
+import bar_code_recevce
 import plc_control
 import ui_main
 
@@ -42,6 +43,7 @@ class PressureUI(QDialog):
         self.timestamp = []
         self.pressure = []
         self.max_pressure = 0
+        self.bar_code = 0
         '''
         setup Qt UI
         '''
@@ -60,15 +62,24 @@ class PressureUI(QDialog):
         # FIXME: figure size should be handled better
         figure_size = (self.ui.pressure_view.width() / 110, self.ui.pressure_view.height() / 110)
         self.chart = PressureChart(figure_size)
-
         '''
-        set up timer
+        set up timer to check pressure periodically
         '''
         self.interval = 50
         self.timer = QTimer()
         self.timer.setSingleShot(False)
         self.timer.setInterval(self.interval)
         self.timer.timeout.connect(self.timeout)
+        '''
+        bar code receive setup
+        '''
+        self.bc_receive = bar_code_recevce.BarCodeReceiveThread('localhost', 12346)
+        self.bc_receive.signal.connect(self.bar_code_update)
+        self.bc_receive.start()
+
+    def bar_code_update(self, bar_code):
+        self.bar_code = bar_code
+        self.ui.dev_bar_code_browser.setText(self.bar_code)
 
     def timeout(self):
         if len(self.timestamp) > 0:
