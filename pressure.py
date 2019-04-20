@@ -87,13 +87,16 @@ class PressureUI(QDialog):
         else:
             self.timestamp.append(0)
         value = self.plc.get(1)
-        value = 1 + value / 1000.0
-        # value = random.randint(1, 10)
         if value == -1:
+            '''
+            remove last item to keep timestamp and value consistent
+            '''
+            del self.timestamp[-1]
             self.timer.stop()
             self.ui.status_label.setText("断开")
             self.ui.status_label.setStyleSheet("font-size:48pt; font-weight:600; color:#ff0000")
             return
+        value = 1 + value / 1000.0
         self.pressure.append(value)
         self.chart.draw_pressure(self.timestamp, self.pressure)
         self.graphic_scene.addWidget(self.chart)
