@@ -1,5 +1,4 @@
 import socket
-import random
 
 serv = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 serv.bind(('localhost', 12345))

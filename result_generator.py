@@ -1,6 +1,7 @@
 import openpyxl
 
-class plc_result(object):
+
+class PLCResult(object):
     def __init__(self):
         self.wb = openpyxl.Workbook()
         self.ws = self.wb.active
@@ -25,8 +26,9 @@ class plc_result(object):
     def save(self, file_):
         self.wb.save(file_)
 
+
 if __name__ == '__main__':
-    result = plc_result()
+    result = PLCResult()
     result.add_result(0.000001, 1)
     result.add_result(0.000002, 2)
     print(result.get_results())
