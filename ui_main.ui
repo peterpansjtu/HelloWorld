@@ -52,26 +52,6 @@
       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:11pt; font-weight:600; color:#ff5500;&quot;&gt;当前负压&lt;/span&gt;&lt;span style=&quot; font-size:11pt; font-weight:600; color:#ff5500; vertical-align:sub;&quot;&gt;(Kpa)&lt;/span&gt;&lt;span style=&quot; font-size:11pt; font-weight:600; color:#ff5500;&quot;&gt;:&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
     </widget>
-    <widget class="QTextBrowser" name="current_pressure_browser">
-     <property name="geometry">
-      <rect>
-       <x>700</x>
-       <y>20</y>
-       <width>231</width>
-       <height>51</height>
-      </rect>
-     </property>
-    </widget>
-    <widget class="QTextBrowser" name="max_pressure_browser">
-     <property name="geometry">
-      <rect>
-       <x>1090</x>
-       <y>20</y>
-       <width>231</width>
-       <height>51</height>
-      </rect>
-     </property>
-    </widget>
     <widget class="QLabel" name="label_2">
      <property name="geometry">
       <rect>
@@ -226,6 +206,26 @@
      </property>
      <property name="text">
       <string>连接</string>
+     </property>
+    </widget>
+    <widget class="QLCDNumber" name="current_pressure_lcd">
+     <property name="geometry">
+      <rect>
+       <x>700</x>
+       <y>20</y>
+       <width>201</width>
+       <height>51</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QLCDNumber" name="max_pressure_lcd">
+     <property name="geometry">
+      <rect>
+       <x>1090</x>
+       <y>20</y>
+       <width>201</width>
+       <height>51</height>
+      </rect>
      </property>
     </widget>
    </widget>

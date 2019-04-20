@@ -10,7 +10,7 @@ while True:
     print(addr, "connected")
     while True:
         for k in registers:
-            registers[k] += 1
+            registers[k] = (registers[k] + 1) % 256
         print(registers)
         data = conn.recv(4096)
         if not data:
