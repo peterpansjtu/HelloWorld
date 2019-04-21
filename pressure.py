@@ -1,8 +1,9 @@
 import sys
 
 import matplotlib
-from PyQt5.QtCore import QTimer
+from PyQt5.QtCore import QTimer, QRegExp
 from PyQt5.QtWidgets import QDialog, QApplication, QGraphicsScene
+from PyQt5.QtGui import QRegExpValidator
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 from matplotlib.figure import Figure
 
@@ -49,6 +50,15 @@ class PressureUI(QDialog):
         '''
         self.ui = ui_main.Ui_Dialog()
         self.ui.setupUi(self)
+        # TODO add input validator for ip address
+        '''
+        ipRange = "(?:[0-1]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])"  # Part of the regular expression
+        # Regulare expression
+        ipRegex = QRegExp("^" + ipRange + "\\." + ipRange + "\\." + ipRange + "\\." + ipRange + "$")
+        ipValidator = QRegExpValidator(ipRegex, self)
+        self.ui.ip_line_edit.setValidator(ipValidator)
+        #self.ui.ip_line_edit.setInputMask('000.000.000.000;_')
+        '''
         '''
         register button click event
         '''
@@ -73,9 +83,7 @@ class PressureUI(QDialog):
         '''
         bar code receive setup
         '''
-        self.bc_receive = bar_code_recevce.BarCodeReceiveThread('localhost', 12346)
-        self.bc_receive.signal.connect(self.bar_code_update)
-        self.bc_receive.start()
+        self.bc_receive = None
 
     def bar_code_update(self, bar_code):
         self.bar_code = bar_code
@@ -110,12 +118,24 @@ class PressureUI(QDialog):
         self.plc.set(1, 0)
 
     def connect_clicked(self):
-        ip = self.ui.ip_line_edit.text()
-        self.plc = plc_control.PLCControl(ip, 12345)
+        plc_ip = self.ui.plc_ip_edit.text()
+        plc_port = int(self.ui.plc_port_edit.text())
+        print(plc_ip, plc_port)
+        self.plc = plc_control.PLCControl(plc_ip, plc_port)
         if not self.plc.in_error():
             self.ui.status_label.setText("OK")
             self.ui.status_label.setStyleSheet("font-size:48pt; font-weight:600; color:#00ff00")
             self.timer.start()
+            '''
+            bar code receive setup
+            '''
+            bc_receive_ip = self.ui.local_ip_edit.text()
+            bc_receive_port = int(self.ui.bc_receive_port_edit.text())
+            print(bc_receive_ip, bc_receive_port)
+            self.bc_receive = bar_code_recevce.BarCodeReceiveThread(bc_receive_ip, bc_receive_port)
+            self.bc_receive.signal.connect(self.bar_code_update)
+            self.bc_receive.start()
+
         else:
             self.timer.stop()
             self.ui.status_label.setText("断开")

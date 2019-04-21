@@ -6,7 +6,7 @@ class VirtualCodeScanner(object):
         self.__error = False
         self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         try:
-            self.client.connect((ip, port))
+            self.client.connect((ip, int(port)))
         except:
             self.__error = True
 

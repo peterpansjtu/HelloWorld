@@ -22,6 +22,9 @@
      <height>891</height>
     </rect>
    </property>
+   <property name="styleSheet">
+    <string notr="true">font: 10pt &quot;MS Shell Dlg 2&quot;;</string>
+   </property>
    <property name="currentIndex">
     <number>0</number>
    </property>
@@ -691,6 +694,141 @@
        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;0.000&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
      </widget>
+    </widget>
+   </widget>
+   <widget class="QWidget" name="network_tab">
+    <attribute name="title">
+     <string>网络设定</string>
+    </attribute>
+    <widget class="QLabel" name="label_58">
+     <property name="geometry">
+      <rect>
+       <x>610</x>
+       <y>310</y>
+       <width>101</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;本机地址&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="local_ip_edit">
+     <property name="geometry">
+      <rect>
+       <x>720</x>
+       <y>300</y>
+       <width>351</width>
+       <height>51</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>localhost</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_59">
+     <property name="geometry">
+      <rect>
+       <x>380</x>
+       <y>460</y>
+       <width>101</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;扫码枪地址&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="code_scannner_ip_edit">
+     <property name="geometry">
+      <rect>
+       <x>490</x>
+       <y>450</y>
+       <width>351</width>
+       <height>51</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>localhost</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="plc_ip_edit">
+     <property name="geometry">
+      <rect>
+       <x>390</x>
+       <y>140</y>
+       <width>351</width>
+       <height>51</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>localhost</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_60">
+     <property name="geometry">
+      <rect>
+       <x>280</x>
+       <y>150</y>
+       <width>101</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;PLC地址&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="bc_receive_port_edit">
+     <property name="geometry">
+      <rect>
+       <x>1070</x>
+       <y>480</y>
+       <width>351</width>
+       <height>51</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>12346</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_61">
+     <property name="geometry">
+      <rect>
+       <x>960</x>
+       <y>490</y>
+       <width>101</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;本机端口&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="plc_port_edit">
+     <property name="geometry">
+      <rect>
+       <x>900</x>
+       <y>170</y>
+       <width>351</width>
+       <height>51</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>12345</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_62">
+     <property name="geometry">
+      <rect>
+       <x>790</x>
+       <y>180</y>
+       <width>101</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;PLC端口&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
     </widget>
    </widget>
   </widget>
