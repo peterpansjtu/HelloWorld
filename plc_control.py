@@ -1,13 +1,16 @@
 import socket
+import logging
 
 
 class PLCControl(object):
-    def __init__(self, ip, port):
+    def __init__(self, ip: str, port: int, logger=None):
+        self.logger = logger or logging.getLogger(__name__)
         self.__error = False
         self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         try:
             self.client.connect((ip, int(port)))
         except:
+            self.logger.exception('Failed to connect to PLC ' + ip + ':' + str(port))
             self.__error = True
 
     def __del__(self):

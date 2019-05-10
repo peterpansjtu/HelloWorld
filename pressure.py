@@ -1,5 +1,7 @@
 import sys
-
+import logging
+import logging.config
+import json
 import matplotlib
 from PyQt5.QtCore import QTimer, QRegExp
 from PyQt5.QtWidgets import QDialog, QApplication, QGraphicsScene
@@ -15,7 +17,7 @@ matplotlib.use("Qt5Agg")  # 声明使用QT5
 
 
 class PressureChart(FigureCanvasQTAgg):
-    def __init__(self, size, parent=None, dpi=100):
+    def __init__(self, size: (int, int), parent=None, dpi: int =100):
         self.figure = Figure(figsize=size, dpi=dpi)
         FigureCanvasQTAgg.__init__(self, self.figure)
         self.setParent(parent)
@@ -38,8 +40,9 @@ class PressureChart(FigureCanvasQTAgg):
 
 
 class PressureUI(QDialog):
-    def __init__(self):
+    def __init__(self, logger=None):
         super(PressureUI, self).__init__()
+        self.logger = logger or logging.getLogger(__name__)
         self.plc = None
         self.timestamp = []
         self.pressure = []
@@ -85,7 +88,7 @@ class PressureUI(QDialog):
         '''
         self.bc_receive = None
 
-    def bar_code_update(self, bar_code):
+    def bar_code_update(self, bar_code: str):
         self.bar_code = bar_code
         self.ui.dev_bar_code_browser.setText(self.bar_code)
 
@@ -121,7 +124,7 @@ class PressureUI(QDialog):
         plc_ip = self.ui.plc_ip_edit.text()
         plc_port = int(self.ui.plc_port_edit.text())
         print(plc_ip, plc_port)
-        self.plc = plc_control.PLCControl(plc_ip, plc_port)
+        self.plc = plc_control.PLCControl(plc_ip, plc_port, self.logger)
         if not self.plc.in_error():
             self.ui.status_label.setText("OK")
             self.ui.status_label.setStyleSheet("font-size:48pt; font-weight:600; color:#00ff00")
@@ -143,7 +146,11 @@ class PressureUI(QDialog):
 
 
 if __name__ == '__main__':
+    with open('logging.json', 'r') as f:
+        config = json.load(f)
+        logging.config.dictConfig(config)
+    logger = logging.getLogger(__name__)
     app = QApplication(sys.argv)
-    window = PressureUI()
+    window = PressureUI(logger)
     window.show()
     sys.exit(app.exec_())
