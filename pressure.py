@@ -1,5 +1,6 @@
 import sys
 import time
+import os
 import matplotlib
 from PyQt5.QtCore import QTimer, QRegExp
 from PyQt5.QtWidgets import QDialog, QApplication, QGraphicsScene
@@ -7,8 +8,9 @@ from PyQt5.QtGui import QRegExpValidator
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 from matplotlib.figure import Figure
 
-import bar_code_recevce
 import OmronFinsTcp
+import MicroScanReader
+import plc_setting
 import ui_main
 
 matplotlib.use("Qt5Agg")  # 声明使用QT5
@@ -61,10 +63,11 @@ class PressureUI(QDialog):
     def __init__(self):
         super(PressureUI, self).__init__()
         self.plc = OmronFinsTcp.OmronPLC()
+        self.scanner =MicroScanReader.MicroScanReader()
         self.timestamp = []
         self.pressure = []
         self.max_pressure = 0
-        self.bar_code = 0
+        self.bar_code = b''
         '''
         setup Qt UI
         '''
@@ -102,6 +105,9 @@ class PressureUI(QDialog):
         self.ui.connect_button.clicked.connect(self.connect_clicked)
         self.ui.auto_button.clicked.connect(self.auto_clicked)
         self.ui.stop_button.clicked.connect(self.stop_clicked)
+        self.ui.save_setting_button.clicked.connect(self.save_setting_clicked)
+        self.ui.total_count_clear_button.clicked.connect(self.total_count_clear_clicked)
+        self.ui.silicate_count_current_clear_button.clicked.connect(self.silicate_count_current_clear_clicked)
         self.ui.io_table_out_button_0.clicked.connect(self.io_table_out_0_clicked)
         self.ui.io_table_out_button_1.clicked.connect(self.io_table_out_1_clicked)
         self.ui.io_table_out_button_2.clicked.connect(self.io_table_out_2_clicked)
@@ -147,15 +153,23 @@ class PressureUI(QDialog):
         bar code receive setup
         '''
         self.bc_receive = None
-
+    '''
     def bar_code_update(self, bar_code):
         self.bar_code = bar_code
         self.ui.dev_bar_code_browser.setText(self.bar_code)
-
+    '''
     def dev_status_timeout(self):
         warnings = self.plc.read('C201')
         manual = self.plc.read('C203')
-        print(manual)
+        total_count = self.plc.read('D500')
+        self.ui.total_count_lcd.display(total_count)
+        silicate_count_current = self.plc.read('D504')
+        self.ui.silicate_count_current_lcd.display(silicate_count_current)
+        print(warnings, manual)
+        if warnings & 1 << 8:
+            self.ui.auto_button.setStyleSheet("font-size:16pt; background-color: green")
+        else:
+            self.ui.auto_button.setStyleSheet('font-size:16pt')
         text = ''
         for bit in warnings_dict:
             if (warnings & 1 << bit):
@@ -194,6 +208,17 @@ class PressureUI(QDialog):
     def io_table_timeout(self):
         io_table_in = self.plc.read('C0')
         io_table_out = self.plc.read('C100')
+        if io_table_in & 1:
+            print('bar code is ', self.bar_code, io_table_in)
+            if not self.bar_code:
+                self.bar_code = self.scanner.read()
+                if self.bar_code:
+                    self.ui.dev_bar_code_browser.setText(self.bar_code)
+                    self.plc.set('C200', 13)
+                else:
+                    print('read bar code failed')
+        else:
+            self.bar_code = b''
         for label in self.io_table_in_label_list:
             if io_table_in & (1 << self.io_table_in_label_list.index(label)):
                 label.setStyleSheet("QLabel {background-color: green}")
@@ -205,14 +230,103 @@ class PressureUI(QDialog):
             else:
                 label.setStyleSheet("QLabel {background-color: red}")
 
+    def connect_clicked(self):
+        plc_ip = self.ui.plc_ip_edit.text()
+        plc_port = int(self.ui.plc_port_edit.text())
+        scanner_ip = self.ui.code_scannner_ip_edit.text()
+        scanner_port = int(self.ui.code_scanner_port_edit.text())
+        print(scanner_ip, scanner_port)
+        if self.plc.openFins(plc_ip, plc_port) and self.scanner.open(scanner_ip, scanner_port):
+            self.ui.status_label.setText("OK")
+            self.ui.status_label.setStyleSheet("font-size:48pt; font-weight:600; color:#00ff00")
+            self.pressure_timer.start()
+            self.dev_status_timer.start()
+            self.io_table_timer.start()
+            setting = self.get_setting_from_file()
+            self.apply_plc_setting(setting)
+            '''
+            bar code receive setup
+            
+            bc_receive_ip = self.ui.local_ip_edit.text()
+            bc_receive_port = int(self.ui.bc_receive_port_edit.text())
+            print(bc_receive_ip, bc_receive_port)
+            self.bc_receive = bar_code_recevce.BarCodeReceiveThread(bc_receive_ip, bc_receive_port)
+            self.bc_receive.signal.connect(self.bar_code_update)
+            self.bc_receive.start()
+            '''
+        else:
+            self.pressure_timer.stop()
+            self.ui.status_label.setText("断开")
+            self.ui.status_label.setStyleSheet("font-size:48pt; font-weight:600; color:#ff0000")
+
+    def get_setting_from_file(self):
+        plcsetting = plc_setting.PLCSetting()
+        setting = plcsetting.read('plcsetting.csv')
+        if not setting:
+            setting = self.get_setting_from_ui()
+        setting1 = {}
+        for key in setting:
+            setting1[key] = float(setting[key])
+        return setting1
+
+    def get_setting_from_ui(self):
+        setting = {}
+        setting['pressure_coef'] = float(self.ui.pressure_coef_edit.text())
+        setting['pressure_var'] = float(self.ui.pressure_var_edit.text())
+        setting['pumping_time'] = float(self.ui.pumping_time_edit.text())
+        setting['pressure_hold_time'] = float(self.ui.pressure_hold_time_edit.text())
+        setting['pressure_thres_low'] = float(self.ui.pressure_thres_low_edit.text())
+        setting['pressure_thres_high'] = float(self.ui.pressure_thres_high_edit.text())
+        setting['pressure_approx'] = float(self.ui.pressure_approx_edit.text())
+        setting['pressure_target'] = float(self.ui.pressure_target_edit.text())
+        setting['silicate_count_total'] = float(self.ui.silicate_count_total_edit.text())
+        return setting
+
+    def save_plc_setting(self, setting):
+        plcsetting = plc_setting.PLCSetting()
+        plcsetting.save('plcsetting.csv', setting)
+
+    def apply_plc_setting(self, setting):
+        # TODO update UI when loading csv file
+        self.plc.write('D508', int(setting['pressure_coef'] * 10))
+        self.plc.write('D510', int(setting['pressure_var'] * 10))
+        self.plc.write('D512', int(setting['pressure_target'] * 10))
+        self.plc.write('D514', int(setting['pressure_approx'] * 10))
+        self.plc.write('D516', int(setting['pressure_thres_high'] * 10))
+        self.plc.write('D518', int(setting['pressure_thres_low'] * 10))
+        self.plc.write('D520', int(setting['pressure_hold_time'] * 10))
+        self.plc.write('D522', int(setting['pumping_time'] * 10))
+        self.plc.write('D502', int(setting['silicate_count_total']))
+
     def reset_clicked(self):
-        self.plc.clear('C200', 0)
+        self.plc.set('C200', 12)
+        time.sleep(0.2)
+        self.plc.clear('C200', 12)
 
     def auto_clicked(self):
         self.plc.set('C200', 10)
+        time.sleep(0.2)
+        self.plc.clear('C200', 10)
 
     def stop_clicked(self):
         self.plc.set('C200', 11)
+        time.sleep(0.2)
+        self.plc.clear('C200', 11)
+
+    def save_setting_clicked(self):
+        setting = self.get_setting_from_ui()
+        self.apply_plc_setting(setting)
+        self.save_plc_setting(setting)
+
+    def total_count_clear_clicked(self):
+        self.plc.set('C200', 14)
+        time.sleep(0.2)
+        self.plc.clear('C200', 14)
+
+    def silicate_count_current_clear_clicked(self):
+        self.plc.set('C200', 15)
+        time.sleep(0.2)
+        self.plc.clear('C200', 15)
 
     def io_table_out_0_clicked(self):
         self.plc.set('C200', 0)
@@ -253,30 +367,6 @@ class PressureUI(QDialog):
         self.plc.set('C200', 7)
         time.sleep(0.2)
         self.plc.clear('C200', 7)
-
-    def connect_clicked(self):
-        plc_ip = self.ui.plc_ip_edit.text()
-        plc_port = int(self.ui.plc_port_edit.text())
-        print(plc_ip, plc_port)
-        if self.plc.openFins(plc_ip, plc_port):
-            self.ui.status_label.setText("OK")
-            self.ui.status_label.setStyleSheet("font-size:48pt; font-weight:600; color:#00ff00")
-            self.pressure_timer.start()
-            self.dev_status_timer.start()
-            self.io_table_timer.start()
-            '''
-            bar code receive setup
-            '''
-            bc_receive_ip = self.ui.local_ip_edit.text()
-            bc_receive_port = int(self.ui.bc_receive_port_edit.text())
-            print(bc_receive_ip, bc_receive_port)
-            self.bc_receive = bar_code_recevce.BarCodeReceiveThread(bc_receive_ip, bc_receive_port)
-            self.bc_receive.signal.connect(self.bar_code_update)
-            self.bc_receive.start()
-        else:
-            self.pressure_timer.stop()
-            self.ui.status_label.setText("断开")
-            self.ui.status_label.setStyleSheet("font-size:48pt; font-weight:600; color:#ff0000")
 
 
 if __name__ == '__main__':

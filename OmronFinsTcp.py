@@ -237,6 +237,7 @@ class OmronPlcFinsTcp():
         try:
             self.sock.connect((self.host, self.port))
         except:
+            print('PLC connect failed')
             return False
         # start establish fins communication
         #print('FINS cmd: request address')
@@ -315,6 +316,7 @@ class OmronPLC():
         self.conType = 'FINS'
         self.conn = OmronPlcFinsTcp(address, port)
         self.plcType = self.conn.openn()
+        print('PLC:', self.plcType)
         return self.plcType
 
     def doRawFinsCommand(self, **kvarg):

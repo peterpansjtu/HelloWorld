@@ -26,17 +26,17 @@ class PLCControl(object):
             return False
 
     def get(self, addr):
-        msg = b"get" + bytes([addr])
+        self.client.settimeout(0.5)
         try:
-            self.client.send(msg)
             recv = self.client.recv(4096)
-            if recv[:2] == b"ok":
-                return recv[2]
         except:
-            return -1
-
+            self.client.settimeout(None)
+            return None
+        self.client.settimeout(None)
+        return recv
 
 if __name__ == '__main__':
-    plc = PLCControl('localhost', 12345)
-    plc.set(1, 12)
+    plc = PLCControl('192.168.0.100', 2001)
+    print('connect')
+    #plc.set(1, 12)
     print(plc.get(1))
