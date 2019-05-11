@@ -362,13 +362,18 @@ class OmronPLC():
 
     def set(self, address, bit):
         value = self.readMemC(address, 1)[0]
-        value = value | 1 << bit
+        value = value | (1 << bit)
         self.writeMemC(address, [value])
 
     def clear(self, address, bit):
         value = self.readMemC(address, 1)[0]
         value = value & ~(1 << bit)
         self.writeMemC(address, [value])
+
+    def test(self, address, bit):
+        value = self.readMemC(address, 1)[0]
+        value = value & (1 << bit)
+        return value != 0
 
     def read(self, address):
         return self.readMemC(address, 1)[0]
