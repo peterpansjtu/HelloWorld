@@ -762,7 +762,7 @@
       </rect>
      </property>
      <property name="text">
-      <string>localhost</string>
+      <string>192.168.0.10</string>
      </property>
     </widget>
     <widget class="QLabel" name="label_60">
@@ -814,7 +814,7 @@
       </rect>
      </property>
      <property name="text">
-      <string>12345</string>
+      <string>9600</string>
      </property>
     </widget>
     <widget class="QLabel" name="label_62">

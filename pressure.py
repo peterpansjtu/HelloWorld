@@ -8,7 +8,7 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 from matplotlib.figure import Figure
 
 import bar_code_recevce
-import plc_control
+import OmronFinsTcp
 import ui_main
 
 matplotlib.use("Qt5Agg")  # 声明使用QT5
@@ -40,7 +40,7 @@ class PressureChart(FigureCanvasQTAgg):
 class PressureUI(QDialog):
     def __init__(self):
         super(PressureUI, self).__init__()
-        self.plc = None
+        self.plc = OmronFinsTcp.OmronPLC()
         self.timestamp = []
         self.pressure = []
         self.max_pressure = 0
@@ -53,7 +53,7 @@ class PressureUI(QDialog):
         # TODO add input validator for ip address
         '''
         ipRange = "(?:[0-1]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])"  # Part of the regular expression
-        # Regulare expression
+        # Regular expression
         ipRegex = QRegExp("^" + ipRange + "\\." + ipRange + "\\." + ipRange + "\\." + ipRange + "$")
         ipValidator = QRegExpValidator(ipRegex, self)
         self.ui.ip_line_edit.setValidator(ipValidator)
@@ -94,7 +94,7 @@ class PressureUI(QDialog):
             self.timestamp.append(self.timestamp[-1] + self.interval / 1000.0)
         else:
             self.timestamp.append(0)
-        value = self.plc.get(1)
+        value = self.plc.read('D100')
         if value == -1:
             '''
             remove last item to keep timestamp and value consistent
@@ -104,7 +104,7 @@ class PressureUI(QDialog):
             self.ui.status_label.setText("断开")
             self.ui.status_label.setStyleSheet("font-size:48pt; font-weight:600; color:#ff0000")
             return
-        value = 1 + value / 1000.0
+        #value = 1 + value / 1000.0
         self.pressure.append(value)
         self.chart.draw_pressure(self.timestamp, self.pressure)
         self.graphic_scene.addWidget(self.chart)
@@ -115,14 +115,13 @@ class PressureUI(QDialog):
             self.ui.max_pressure_lcd.display(value)
 
     def reset_clicked(self):
-        self.plc.set(1, 0)
+        self.plc.clear('C200', 0)
 
     def connect_clicked(self):
         plc_ip = self.ui.plc_ip_edit.text()
         plc_port = int(self.ui.plc_port_edit.text())
         print(plc_ip, plc_port)
-        self.plc = plc_control.PLCControl(plc_ip, plc_port)
-        if not self.plc.in_error():
+        if self.plc.openFins(plc_ip, plc_port):
             self.ui.status_label.setText("OK")
             self.ui.status_label.setStyleSheet("font-size:48pt; font-weight:600; color:#00ff00")
             self.timer.start()
@@ -135,7 +134,6 @@ class PressureUI(QDialog):
             self.bc_receive = bar_code_recevce.BarCodeReceiveThread(bc_receive_ip, bc_receive_port)
             self.bc_receive.signal.connect(self.bar_code_update)
             self.bc_receive.start()
-
         else:
             self.timer.stop()
             self.ui.status_label.setText("断开")

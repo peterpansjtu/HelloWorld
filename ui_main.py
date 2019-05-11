@@ -274,11 +274,11 @@ class Ui_Dialog(object):
         self.local_ip_edit.setText(_translate("Dialog", "localhost"))
         self.label_59.setText(_translate("Dialog", "<html><head/><body><p>扫码枪地址</p></body></html>"))
         self.code_scannner_ip_edit.setText(_translate("Dialog", "localhost"))
-        self.plc_ip_edit.setText(_translate("Dialog", "localhost"))
+        self.plc_ip_edit.setText(_translate("Dialog", "192.168.0.10"))
         self.label_60.setText(_translate("Dialog", "<html><head/><body><p><span style=\" font-size:12pt;\">PLC地址</span></p></body></html>"))
         self.bc_receive_port_edit.setText(_translate("Dialog", "12346"))
         self.label_61.setText(_translate("Dialog", "<html><head/><body><p><span style=\" font-size:12pt;\">本机端口</span></p></body></html>"))
-        self.plc_port_edit.setText(_translate("Dialog", "12345"))
+        self.plc_port_edit.setText(_translate("Dialog", "9600"))
         self.label_62.setText(_translate("Dialog", "<html><head/><body><p><span style=\" font-size:12pt;\">PLC端口</span></p></body></html>"))
         self.tabs.setTabText(self.tabs.indexOf(self.network_tab), _translate("Dialog", "网络设定"))
 
