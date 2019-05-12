@@ -43,16 +43,18 @@ class PressureChart(FigureCanvasQTAgg):
             self.thres_high.set_ydata(high)
         except:
             self.thres_high = self.axes.axhline(y=high, linewidth=0.5, color='blue')
+        #self.axes.plot()
         self.figure.canvas.draw()
-        self.figure.canvas.flush_events()
+        #self.figure.canvas.flush_events()
 
     def draw_pressure(self, x, y):
         self.line.set_xdata(x)
         self.line.set_ydata(y)
         # self.axes.relim()
         # self.axes.autoscale_view()
+        #self.axes.plot()
         self.figure.canvas.draw()
-        self.figure.canvas.flush_events()
+        #self.figure.canvas.flush_events()
 
 
 warnings_dict = {0: '硅胶使用寿命已到，请及时更换!\n',
@@ -147,6 +149,7 @@ class PressureUI(QDialog):
         # FIXME: figure size should be handled better
         figure_size = (self.ui.pressure_view.width() / 110, self.ui.pressure_view.height() / 110)
         self.chart = PressureChart(figure_size)
+        self.graphic_scene.addWidget(self.chart)
         self.update_pressure_threshold()
         '''
         set up timer to check device status single shot
@@ -155,7 +158,7 @@ class PressureUI(QDialog):
         '''
         set up timer to check device status periodically
         '''
-        self.dev_status_interval = 500
+        self.dev_status_interval = 1000
         self.dev_status_timer = QTimer()
         self.dev_status_timer.setSingleShot(False)
         self.dev_status_timer.setInterval(self.dev_status_interval)
@@ -163,7 +166,7 @@ class PressureUI(QDialog):
         '''
         set up timer to check pressure periodically
         '''
-        self.pressure_interval = 50
+        self.pressure_interval = 10
         self.pressure_timer = QTimer()
         self.pressure_timer.setSingleShot(False)
         self.pressure_timer.setInterval(self.pressure_interval)
@@ -171,7 +174,7 @@ class PressureUI(QDialog):
         '''
         set up timer to check io table periodically
         '''
-        self.io_table_interval = 100
+        self.io_table_interval = 200
         self.io_table_timer = QTimer()
         self.io_table_timer.setSingleShot(False)
         self.io_table_timer.setInterval(self.io_table_interval)
@@ -214,7 +217,7 @@ class PressureUI(QDialog):
         if not self.plc.test('C204', 0):
             if self.in_testing:
                 print('test finished')
-                pressure_var = self.plc.read('D526')
+                pressure_var = self.plc.read('D526') / 100.0
                 print(pressure_var)
                 pressure_var_sign = self.plc.read('D528')
                 if pressure_var_sign == 1:
@@ -246,8 +249,8 @@ class PressureUI(QDialog):
         if value > self.max_pressure:
             self.max_pressure = value
         self.chart.draw_pressure(self.timestamp, self.pressure)
-        self.graphic_scene.addWidget(self.chart)
-        self.ui.pressure_view.show()
+        #self.graphic_scene.addWidget(self.chart)
+        #self.ui.pressure_view.show()
 
     def io_table_timeout(self):
         io_table_in = self.plc.read('C0')
@@ -258,6 +261,7 @@ class PressureUI(QDialog):
             self.pressure = []
             self.ui.status_label.setText('')
             self.ui.dev_bar_code_browser.setText('')
+            self.ui.max_pressure_lcd.display(0)
             print(self.need_bar_code)
             if self.need_bar_code:
                 self.bar_code = self.scanner.read()
@@ -391,7 +395,6 @@ class PressureUI(QDialog):
         self.plc.clear('C200', 12)
 
     def auto_clicked(self):
-        print('auto clicked')
         self.plc.set('C200', 10)
         time.sleep(0.2)
         self.plc.clear('C200', 10)
