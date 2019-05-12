@@ -214,6 +214,12 @@ class PressureUI(QDialog):
         if not self.plc.test('C204', 0):
             if self.in_testing:
                 print('test finished')
+                pressure_var = self.plc.read('D526')
+                print(pressure_var)
+                pressure_var_sign = self.plc.read('D528')
+                if pressure_var_sign == 1:
+                    pressure_var = -pressure_var
+                self.ui.max_pressure_lcd.display(pressure_var)
                 io_table_out = self.plc.read('C100')
                 if io_table_out & 1 << 5:
                     test_result = 'OK'
@@ -222,8 +228,8 @@ class PressureUI(QDialog):
                 else:
                     print('Should not happen')
                     test_result = 'NG'
-                self.result_file.add_result(time.time() - self.pressure_start_time, self.max_pressure, test_result,
-                                            self.bar_code)
+                self.result_file.add_result(format(time.time() - self.pressure_start_time, '.1f'), pressure_var,
+                                            test_result, self.bar_code)
                 self.in_testing = False
                 self.need_bar_code = True
             return
@@ -234,22 +240,11 @@ class PressureUI(QDialog):
             self.pressure_start_time = time.time()
             self.timestamp.append(0)
         value = self.plc.read('D524')
-        vaule2 = self.plc.read('D526')
-        '''
-        if value == -1:
-            #remove last item to keep timestamp and value consistent
-            del self.timestamp[-1]
-            self.pressure_timer.stop()
-            self.ui.connection_label.setText("断开")
-            self.ui.connection_label.setStyleSheet("font-size:48pt; font-weight:600; color:#ff0000")
-            return
-        '''
         value = value / 100.0
         self.pressure.append(value)
         self.ui.current_pressure_lcd.display(value)
         if value > self.max_pressure:
             self.max_pressure = value
-            self.ui.max_pressure_lcd.display(value)
         self.chart.draw_pressure(self.timestamp, self.pressure)
         self.graphic_scene.addWidget(self.chart)
         self.ui.pressure_view.show()
