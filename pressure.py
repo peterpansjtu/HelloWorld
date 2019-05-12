@@ -1,16 +1,16 @@
+import os
 import sys
 import time
-import os
-import matplotlib
 from datetime import date
-from PyQt5.QtCore import QTimer, QRegExp
+
+import matplotlib
+from PyQt5.QtCore import QTimer
 from PyQt5.QtWidgets import QDialog, QApplication, QGraphicsScene
-from PyQt5.QtGui import QRegExpValidator
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 from matplotlib.figure import Figure
 
-import OmronFinsTcp
 import MicroScanReader
+import OmronFinsTcp
 import plc_setting
 import result_generator
 import ui_main
@@ -38,7 +38,7 @@ class PressureChart(FigureCanvasQTAgg):
         try:
             self.thres_low.set_ydata(low)
         except:
-            self.thres_low = self.axes.axhline(y=low,linewidth=0.5, color='blue')
+            self.thres_low = self.axes.axhline(y=low, linewidth=0.5, color='blue')
         try:
             self.thres_high.set_ydata(high)
         except:
@@ -49,38 +49,40 @@ class PressureChart(FigureCanvasQTAgg):
     def draw_pressure(self, x, y):
         self.line.set_xdata(x)
         self.line.set_ydata(y)
-        #self.axes.relim()
-        #self.axes.autoscale_view()
+        # self.axes.relim()
+        # self.axes.autoscale_view()
         self.figure.canvas.draw()
         self.figure.canvas.flush_events()
 
-warnings_dict = { 0 : '硅胶使用寿命已到，请及时更换!\n',
-                  1 : '热保护跳闸，请手动复位\n',
-                  2 : '急停中\n',
-                  3 : '光栅异常\n',
-                  4 : '没有读到条码\n',
-                  5 : '重新开始请复位\n'
-                }
 
-manual_dict = { 0 : '真空泵手动中\n',
-                1 : '下压缸手动中\n',
-                2 : '阀1（快速阀）手动中\n',
-                3 : '阀2（慢速阀）手动中\n',
-                4 : '阀3（排气阀）手动中\n',
-                5 : 'OK手动中\n',
-                6 : 'NG手动中\n',
-                7 : '蜂鸣器手动中\n',
-                12 : '复位按钮\n',
-                13 : '准备就绪（扫描枪&软件）\n',
-                14 : '生产计数清零\n'
+warnings_dict = {0: '硅胶使用寿命已到，请及时更换!\n',
+                 1: '热保护跳闸，请手动复位\n',
+                 2: '急停中\n',
+                 3: '光栅异常\n',
+                 4: '没有读到条码\n',
+                 5: '重新开始请复位\n'
+                 }
+
+manual_dict = {0: '真空泵手动中\n',
+               1: '下压缸手动中\n',
+               2: '阀1（快速阀）手动中\n',
+               3: '阀2（慢速阀）手动中\n',
+               4: '阀3（排气阀）手动中\n',
+               5: 'OK手动中\n',
+               6: 'NG手动中\n',
+               7: '蜂鸣器手动中\n',
+               12: '复位按钮\n',
+               13: '准备就绪（扫描枪&软件）\n',
+               14: '生产计数清零\n'
                }
+
 
 class PressureUI(QDialog):
     def __init__(self):
         super(PressureUI, self).__init__()
         self.plc = OmronFinsTcp.OmronPLC()
         self.plc.signal.connect(self.plc_connect_failed)
-        self.scanner =MicroScanReader.MicroScanReader()
+        self.scanner = MicroScanReader.MicroScanReader()
         self.date = date.today().strftime('%Y-%b-%d')
         if not os.path.exists('结果/'):
             os.makedirs('结果/')
@@ -178,11 +180,13 @@ class PressureUI(QDialog):
         bar code receive setup
         '''
         self.bc_receive = None
+
     '''
     def bar_code_update(self, bar_code):
         self.bar_code = bar_code
         self.ui.dev_bar_code_browser.setText(self.bar_code)
     '''
+
     # TODO handle PLC and scanner lost at runtime
     def dev_status_timeout(self):
         warnings = self.plc.read('C201')
@@ -218,7 +222,8 @@ class PressureUI(QDialog):
                 else:
                     print('Should not happen')
                     test_result = 'NG'
-                self.result_file.add_result(time.time() - self.pressure_start_time, self.max_pressure, test_result, self.bar_code)
+                self.result_file.add_result(time.time() - self.pressure_start_time, self.max_pressure, test_result,
+                                            self.bar_code)
                 self.in_testing = False
                 self.need_bar_code = True
             return
@@ -369,7 +374,7 @@ class PressureUI(QDialog):
         self.plc.write('D502', int(setting['silicate_count_total']))
 
     def apply_plc_setting_to_ui(self, setting):
-        try :
+        try:
             self.ui.pressure_coef_edit.setText(str(setting['pressure_coef']))
             self.ui.pressure_var_edit.setText(str(setting['pressure_var']))
             self.ui.pumping_time_edit.setText(str(setting['pumping_time']))

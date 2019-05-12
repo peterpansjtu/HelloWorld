@@ -1,6 +1,8 @@
-import openpyxl
 import os
 import time
+
+import openpyxl
+
 
 class PLCResult(object):
     def __init__(self, path):
@@ -26,7 +28,7 @@ class PLCResult(object):
             self.ws.cell(1, self.test_result_column, "测试结果")
             self.next_row += 1
 
-    def add_result(self, pumping_time, pressure, test_result, bar_code = ''):
+    def add_result(self, pumping_time, pressure, test_result, bar_code=''):
         self.ws.cell(self.next_row, self.time_column, time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
         self.ws.cell(self.next_row, self.bar_code_column, bar_code)
         self.ws.cell(self.next_row, self.pumping_time_column, pumping_time)
@@ -35,7 +37,8 @@ class PLCResult(object):
         self.next_row += 1
         self.wb.save(self.path)
 
+
 if __name__ == '__main__':
     result = PLCResult('1.xlsx')
-    #result.add_result(0.000001, 3, 'ok')
-    #result.add_result(0.000002, 4, 'ok')
+    # result.add_result(0.000001, 3, 'ok')
+    # result.add_result(0.000002, 4, 'ok')

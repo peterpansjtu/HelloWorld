@@ -1,5 +1,5 @@
-import os
 import csv
+import os
 
 
 class PLCSetting(object):
@@ -21,4 +21,3 @@ class PLCSetting(object):
             writer = csv.DictWriter(f, fieldnames=setting_columns)
             writer.writeheader()
             writer.writerow(setting)
-

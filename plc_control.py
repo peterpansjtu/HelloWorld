@@ -35,8 +35,9 @@ class PLCControl(object):
         self.client.settimeout(None)
         return recv
 
+
 if __name__ == '__main__':
     plc = PLCControl('192.168.0.100', 2001)
     print('connect')
-    #plc.set(1, 12)
+    # plc.set(1, 12)
     print(plc.get(1))
