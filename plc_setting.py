@@ -9,8 +9,9 @@ class PLCSetting(object):
     def read(self, path):
         if os.path.isfile(path):
             with open(path, 'r') as f:
-                setting = csv.DictReader(f)
-            return setting
+                reader = csv.DictReader(f)
+                for setting in reader:
+                    return setting
         else:
             return {}
 
