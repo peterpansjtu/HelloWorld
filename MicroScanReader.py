@@ -10,8 +10,8 @@ class MicroScanReader(object):
 
     def open(self, ip, port):
         try:
-            self.client.connect((ip, int(port)))
             self.client.settimeout(5.0)
+            self.client.connect((ip, int(port)))
         except:
             print('MicroScan connect failed')
             return False

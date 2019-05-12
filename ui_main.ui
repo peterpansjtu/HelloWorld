@@ -142,14 +142,14 @@
     <widget class="QLabel" name="status_label">
      <property name="geometry">
       <rect>
-       <x>140</x>
+       <x>40</x>
        <y>40</y>
-       <width>161</width>
+       <width>491</width>
        <height>91</height>
       </rect>
      </property>
      <property name="text">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:48pt; font-weight:600; color:#00ff00;&quot;&gt;OK&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:48pt; font-weight:600;&quot;&gt;连接中&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
     </widget>
     <widget class="QLabel" name="label_6">
@@ -173,19 +173,6 @@
        <width>411</width>
        <height>221</height>
       </rect>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="connect_button">
-     <property name="geometry">
-      <rect>
-       <x>392</x>
-       <y>77</y>
-       <width>121</width>
-       <height>41</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>连接</string>
      </property>
     </widget>
     <widget class="QLCDNumber" name="current_pressure_lcd">

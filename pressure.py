@@ -102,7 +102,6 @@ class PressureUI(QDialog):
         register button click event
         '''
         self.ui.reset_button.clicked.connect(self.reset_clicked)
-        self.ui.connect_button.clicked.connect(self.connect_clicked)
         self.ui.auto_button.clicked.connect(self.auto_clicked)
         self.ui.stop_button.clicked.connect(self.stop_clicked)
         self.ui.save_setting_button.clicked.connect(self.save_setting_clicked)
@@ -126,6 +125,10 @@ class PressureUI(QDialog):
         figure_size = (self.ui.pressure_view.width() / 110, self.ui.pressure_view.height() / 110)
         self.chart = PressureChart(figure_size)
         '''
+        set up timer to check device status single shot
+        '''
+        QTimer.singleShot(3000, self.connect_clicked)
+        '''
         set up timer to check device status periodically
         '''
         self.dev_status_interval = 500
@@ -138,7 +141,7 @@ class PressureUI(QDialog):
         '''
         self.pressure_interval = 50
         self.pressure_timer = QTimer()
-        self.pressure_timer.setSingleShot(False)
+        self.pressure_timer.setSingleShot(True)
         self.pressure_timer.setInterval(self.pressure_interval)
         self.pressure_timer.timeout.connect(self.pressure_timeout)
         '''
@@ -158,6 +161,7 @@ class PressureUI(QDialog):
         self.bar_code = bar_code
         self.ui.dev_bar_code_browser.setText(self.bar_code)
     '''
+    # TODO handle PLC and scanner lost at runtime
     def dev_status_timeout(self):
         warnings = self.plc.read('C201')
         manual = self.plc.read('C203')
@@ -231,12 +235,15 @@ class PressureUI(QDialog):
                 label.setStyleSheet("QLabel {background-color: red}")
 
     def connect_clicked(self):
+        print('Try to connect')
         plc_ip = self.ui.plc_ip_edit.text()
         plc_port = int(self.ui.plc_port_edit.text())
         scanner_ip = self.ui.code_scannner_ip_edit.text()
         scanner_port = int(self.ui.code_scanner_port_edit.text())
-        print(scanner_ip, scanner_port)
-        if self.plc.openFins(plc_ip, plc_port) and self.scanner.open(scanner_ip, scanner_port):
+        plc_open = self.plc.openFins(plc_ip, plc_port)
+        scanner_open = self.scanner.open(scanner_ip, scanner_port)
+        if plc_open and scanner_open:
+            # TODO how to use status label
             self.ui.status_label.setText("OK")
             self.ui.status_label.setStyleSheet("font-size:48pt; font-weight:600; color:#00ff00")
             self.pressure_timer.start()
@@ -255,9 +262,14 @@ class PressureUI(QDialog):
             self.bc_receive.start()
             '''
         else:
-            self.pressure_timer.stop()
-            self.ui.status_label.setText("断开")
-            self.ui.status_label.setStyleSheet("font-size:48pt; font-weight:600; color:#ff0000")
+            error_text = ''
+            if not plc_open:
+                error_text += 'PLC '
+            if not scanner_open:
+                error_text += '扫码枪 '
+            error_text += '断开'
+            self.ui.status_label.setText(error_text)
+            self.ui.status_label.setStyleSheet("font-size:36pt; font-weight:600; color:#ff0000")
 
     def get_setting_from_file(self):
         plcsetting = plc_setting.PLCSetting()
@@ -287,7 +299,7 @@ class PressureUI(QDialog):
         plcsetting.save('plcsetting.csv', setting)
 
     def apply_plc_setting(self, setting):
-        # TODO update UI when loading csv file
+        # TODO check update UI when loading csv file
         self.plc.write('D508', int(setting['pressure_coef'] * 10))
         self.plc.write('D510', int(setting['pressure_var'] * 10))
         self.plc.write('D512', int(setting['pressure_target'] * 10))
@@ -297,6 +309,15 @@ class PressureUI(QDialog):
         self.plc.write('D520', int(setting['pressure_hold_time'] * 10))
         self.plc.write('D522', int(setting['pumping_time'] * 10))
         self.plc.write('D502', int(setting['silicate_count_total']))
+        self.ui.pressure_coef_edit.setText(setting['pressure_coef'])
+        self.ui.pressure_var_edit.setText(setting['pressure_var'])
+        self.ui.pumping_time_edit.setText(setting['pumping_time'])
+        self.ui.pressure_hold_time_edit.setText(setting['pressure_hold_time'])
+        self.ui.pressure_thres_low_edit.setText(setting['pressure_thres_low'])
+        self.ui.pressure_thres_high_edit.setText(setting['pressure_thres_high'])
+        self.ui.pressure_approx_edit.setText(setting['pressure_approx'])
+        self.ui.pressure_target_edit.setText(setting['pressure_target'])
+        self.ui.silicate_count_total_edit.setText(int(setting['silicate_count_total']))
 
     def reset_clicked(self):
         self.plc.set('C200', 12)
