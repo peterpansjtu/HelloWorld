@@ -25,7 +25,6 @@ class MicroScanReader(object):
             self.client.settimeout(None)
             return ''
         self.client.settimeout(None)
-        print(recv)
         code = str(recv, encoding='utf-8')
         code = code.split('\r\n')
         if code:

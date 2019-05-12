@@ -3,6 +3,8 @@ import re
 import socket
 import struct
 
+from PyQt5.QtCore import QObject, pyqtSignal
+
 # HOST = '192.168.200.50'    # The remote host
 # PORT = 9600              # The same port as used by the server
 # s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -260,7 +262,7 @@ class OmronPlcFinsTcp():
             return False
         self.clientNode = binstr2int(r1.finsData[0:4])
         self.serverNode = binstr2int(r1.finsData[4:8])
-        print('FINS address client: {0},server: {1}'.format(self.clientNode, self.serverNode, ))
+        #print('FINS address client: {0},server: {1}'.format(self.clientNode, self.serverNode, ))
         # Get PLC type as test dummy command
         #return self.doFinsCommand(MRC=0x05, SRC=0x01, cmdData='\x00')[0:20]
         return True
@@ -297,8 +299,10 @@ class OmronPlcFinsTcp():
         return r
 
 
-class OmronPLC():
+class OmronPLC(QObject):
+    signal = pyqtSignal(str, name='exception')
     def __init__(self):
+        super(OmronPLC, self).__init__()
         self.conType = None
         self.plcType = None
         '''
@@ -311,12 +315,12 @@ class OmronPLC():
             'A': (0x33, 0xB3),
             'D': (0x02, 0x82),
         }
+        self.in_error = False
 
     def openFins(self, address, port=9600):
         self.conType = 'FINS'
         self.conn = OmronPlcFinsTcp(address, port)
         self.plcType = self.conn.openn()
-        print('PLC:', self.plcType)
         return self.plcType
 
     def doRawFinsCommand(self, **kvarg):
@@ -363,25 +367,50 @@ class OmronPLC():
         return rawres
 
     def set(self, address, bit):
-        value = self.readMemC(address, 1)[0]
-        value = value | (1 << bit)
-        self.writeMemC(address, [value])
+        try:
+            if not self.in_error:
+                value = self.readMemC(address, 1)[0]
+                value = value | (1 << bit)
+                self.writeMemC(address, [value])
+        except:
+            self.in_error = True
+            self.signal.emit('failed')
 
     def clear(self, address, bit):
-        value = self.readMemC(address, 1)[0]
-        value = value & ~(1 << bit)
-        self.writeMemC(address, [value])
+        try:
+            if not self.in_error:
+                value = self.readMemC(address, 1)[0]
+                value = value & ~(1 << bit)
+                self.writeMemC(address, [value])
+        except:
+            self.in_error = True
+            self.signal.emit('failed')
 
     def test(self, address, bit):
-        value = self.readMemC(address, 1)[0]
-        value = value & (1 << bit)
-        return value != 0
+        try:
+            if not self.in_error:
+                value = self.readMemC(address, 1)[0]
+                value = value & (1 << bit)
+                return value != 0
+        except:
+            self.in_error = True
+            self.signal.emit('failed')
 
     def read(self, address):
-        return self.readMemC(address, 1)[0]
+        try:
+            if not self.in_error:
+                return self.readMemC(address, 1)[0]
+        except:
+            self.in_error = True
+            self.signal.emit('failed')
 
     def write(self, address, value):
-        self.writeMemC(address, [value])
+        try:
+            if not self.in_error:
+                self.writeMemC(address, [value])
+        except:
+            self.in_error = True
+            self.signal.emit('failed')
 
 
 if __name__ == "__main__":

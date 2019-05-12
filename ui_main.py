@@ -473,7 +473,7 @@ class Ui_Dialog(object):
         self.auto_button.setText(_translate("Dialog", "自动"))
         self.stop_button.setText(_translate("Dialog", "停止"))
         self.label_3.setText(_translate("Dialog", "<html><head/><body><p><span style=\" font-size:10pt;\">当前条形码</span></p></body></html>"))
-        self.status_label.setText(_translate("Dialog", "<html><head/><body><p><span style=\" font-size:48pt; font-weight:600;\">OK</span></p></body></html>"))
+        self.status_label.setText(_translate("Dialog", "<html><head/><body><p><br/></p></body></html>"))
         self.label_6.setText(_translate("Dialog", "<html><head/><body><p><span style=\" font-size:12pt; font-weight:600;\">设备信息</span></p></body></html>"))
         self.label_4.setText(_translate("Dialog", "<html><head/><body><p><span style=\" font-size:12pt; font-weight:600;\">生产计数</span></p></body></html>"))
         self.total_count_clear_button.setText(_translate("Dialog", "清零"))
