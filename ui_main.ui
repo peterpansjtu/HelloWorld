@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1389</width>
-    <height>894</height>
+    <width>1007</width>
+    <height>671</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -35,17 +35,17 @@
     <widget class="QGraphicsView" name="pressure_view">
      <property name="geometry">
       <rect>
-       <x>570</x>
+       <x>400</x>
        <y>90</y>
-       <width>791</width>
-       <height>551</height>
+       <width>591</width>
+       <height>411</height>
       </rect>
      </property>
     </widget>
     <widget class="QLabel" name="label">
      <property name="geometry">
       <rect>
-       <x>580</x>
+       <x>430</x>
        <y>30</y>
        <width>141</width>
        <height>31</height>
@@ -58,7 +58,7 @@
     <widget class="QLabel" name="variable_label_0">
      <property name="geometry">
       <rect>
-       <x>970</x>
+       <x>730</x>
        <y>30</y>
        <width>141</width>
        <height>31</height>
@@ -74,8 +74,8 @@
     <widget class="QPushButton" name="reset_button">
      <property name="geometry">
       <rect>
-       <x>130</x>
-       <y>570</y>
+       <x>70</x>
+       <y>400</y>
        <width>191</width>
        <height>71</height>
       </rect>
@@ -90,8 +90,8 @@
     <widget class="QPushButton" name="auto_button">
      <property name="geometry">
       <rect>
-       <x>130</x>
-       <y>670</y>
+       <x>70</x>
+       <y>480</y>
        <width>191</width>
        <height>71</height>
       </rect>
@@ -106,8 +106,8 @@
     <widget class="QPushButton" name="stop_button">
      <property name="geometry">
       <rect>
-       <x>130</x>
-       <y>770</y>
+       <x>70</x>
+       <y>560</y>
        <width>191</width>
        <height>71</height>
       </rect>
@@ -122,9 +122,9 @@
     <widget class="QLabel" name="label_3">
      <property name="geometry">
       <rect>
-       <x>170</x>
-       <y>460</y>
-       <width>171</width>
+       <x>10</x>
+       <y>350</y>
+       <width>81</width>
        <height>21</height>
       </rect>
      </property>
@@ -135,9 +135,9 @@
     <widget class="QTextBrowser" name="dev_bar_code_browser">
      <property name="geometry">
       <rect>
-       <x>40</x>
-       <y>490</y>
-       <width>471</width>
+       <x>90</x>
+       <y>340</y>
+       <width>301</width>
        <height>51</height>
       </rect>
      </property>
@@ -145,10 +145,10 @@
     <widget class="QLabel" name="status_label">
      <property name="geometry">
       <rect>
-       <x>170</x>
-       <y>50</y>
-       <width>261</width>
-       <height>111</height>
+       <x>90</x>
+       <y>30</y>
+       <width>151</width>
+       <height>51</height>
       </rect>
      </property>
      <property name="text">
@@ -159,21 +159,21 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>250</y>
-       <width>91</width>
-       <height>61</height>
+       <y>120</y>
+       <width>31</width>
+       <height>131</height>
       </rect>
      </property>
      <property name="text">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt; font-weight:600;&quot;&gt;设备信息&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt; font-weight:600;&quot;&gt;设&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt; font-weight:600;&quot;&gt;备&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt; font-weight:600;&quot;&gt;信&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt; font-weight:600;&quot;&gt;息&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
     </widget>
     <widget class="QTextBrowser" name="dev_info_browser">
      <property name="geometry">
       <rect>
-       <x>120</x>
-       <y>220</y>
-       <width>411</width>
+       <x>50</x>
+       <y>100</y>
+       <width>291</width>
        <height>221</height>
       </rect>
      </property>
@@ -181,9 +181,9 @@
     <widget class="QLCDNumber" name="current_pressure_lcd">
      <property name="geometry">
       <rect>
-       <x>730</x>
+       <x>580</x>
        <y>20</y>
-       <width>201</width>
+       <width>131</width>
        <height>51</height>
       </rect>
      </property>
@@ -191,9 +191,9 @@
     <widget class="QLCDNumber" name="max_pressure_lcd">
      <property name="geometry">
       <rect>
-       <x>1120</x>
+       <x>860</x>
        <y>20</y>
-       <width>201</width>
+       <width>131</width>
        <height>51</height>
       </rect>
      </property>
@@ -201,8 +201,8 @@
     <widget class="QLabel" name="label_4">
      <property name="geometry">
       <rect>
-       <x>790</x>
-       <y>720</y>
+       <x>510</x>
+       <y>530</y>
        <width>121</width>
        <height>31</height>
       </rect>
@@ -214,8 +214,8 @@
     <widget class="QLCDNumber" name="total_count_lcd">
      <property name="geometry">
       <rect>
-       <x>910</x>
-       <y>710</y>
+       <x>630</x>
+       <y>520</y>
        <width>201</width>
        <height>51</height>
       </rect>
@@ -224,8 +224,8 @@
     <widget class="QPushButton" name="total_count_clear_button">
      <property name="geometry">
       <rect>
-       <x>1150</x>
-       <y>710</y>
+       <x>870</x>
+       <y>520</y>
        <width>121</width>
        <height>51</height>
       </rect>
@@ -237,10 +237,10 @@
     <widget class="QLabel" name="connection_label">
      <property name="geometry">
       <rect>
-       <x>1040</x>
-       <y>790</y>
+       <x>660</x>
+       <y>590</y>
        <width>301</width>
-       <height>61</height>
+       <height>41</height>
       </rect>
      </property>
      <property name="text">
@@ -255,8 +255,8 @@
     <widget class="QFrame" name="input_frame">
      <property name="geometry">
       <rect>
-       <x>190</x>
-       <y>160</y>
+       <x>80</x>
+       <y>100</y>
        <width>451</width>
        <height>501</height>
       </rect>
@@ -620,8 +620,8 @@
     <widget class="QFrame" name="input_frame_2">
      <property name="geometry">
       <rect>
-       <x>660</x>
-       <y>160</y>
+       <x>510</x>
+       <y>100</y>
        <width>451</width>
        <height>501</height>
       </rect>
@@ -1127,10 +1127,10 @@
     <widget class="QFrame" name="frame">
      <property name="geometry">
       <rect>
-       <x>130</x>
-       <y>90</y>
-       <width>871</width>
-       <height>671</height>
+       <x>60</x>
+       <y>-10</y>
+       <width>791</width>
+       <height>641</height>
       </rect>
      </property>
      <property name="frameShape">
@@ -1457,9 +1457,9 @@
     <widget class="QLineEdit" name="code_scannner_ip_edit">
      <property name="geometry">
       <rect>
-       <x>390</x>
+       <x>370</x>
        <y>240</y>
-       <width>351</width>
+       <width>111</width>
        <height>51</height>
       </rect>
      </property>
@@ -1470,9 +1470,9 @@
     <widget class="QLineEdit" name="plc_ip_edit">
      <property name="geometry">
       <rect>
-       <x>390</x>
+       <x>370</x>
        <y>140</y>
-       <width>351</width>
+       <width>111</width>
        <height>51</height>
       </rect>
      </property>
@@ -1496,9 +1496,9 @@
     <widget class="QLineEdit" name="code_scanner_port_edit">
      <property name="geometry">
       <rect>
-       <x>900</x>
+       <x>620</x>
        <y>240</y>
-       <width>351</width>
+       <width>51</width>
        <height>51</height>
       </rect>
      </property>
@@ -1509,9 +1509,9 @@
     <widget class="QLabel" name="label_61">
      <property name="geometry">
       <rect>
-       <x>790</x>
+       <x>540</x>
        <y>250</y>
-       <width>101</width>
+       <width>81</width>
        <height>31</height>
       </rect>
      </property>
@@ -1522,9 +1522,9 @@
     <widget class="QLineEdit" name="plc_port_edit">
      <property name="geometry">
       <rect>
-       <x>900</x>
+       <x>620</x>
        <y>140</y>
-       <width>351</width>
+       <width>51</width>
        <height>51</height>
       </rect>
      </property>
@@ -1535,9 +1535,9 @@
     <widget class="QLabel" name="label_62">
      <property name="geometry">
       <rect>
-       <x>790</x>
+       <x>540</x>
        <y>150</y>
-       <width>101</width>
+       <width>71</width>
        <height>31</height>
       </rect>
      </property>
