@@ -14,6 +14,7 @@ import OmronFinsTcp
 import plc_setting
 import result_generator
 import ui_main
+import login
 
 matplotlib.use("Qt5Agg")  # 声明使用QT5
 
@@ -101,6 +102,7 @@ class PressureUI(QDialog):
         '''
         self.ui = ui_main.Ui_Dialog()
         self.ui.setupUi(self)
+        self.ui.tabs.currentChanged.connect(self.tab_changed)
         self.io_table_in_label_list = [self.ui.io_table_in_label_0,
                                        self.ui.io_table_in_label_1,
                                        self.ui.io_table_in_label_2,
@@ -459,6 +461,12 @@ class PressureUI(QDialog):
         self.plc.set('C200', 7)
         time.sleep(0.2)
         self.plc.clear('C200', 7)
+
+    def tab_changed(self, index):
+        if index == self.ui.tabs.indexOf(self.ui.set_tab):
+            l = login.Login()
+            while l.exec_() != QDialog.Accepted:
+                pass
 
 
 if __name__ == '__main__':
