@@ -1,4 +1,4 @@
-from PyQt5 import QtWidgets
+from PyQt5 import QtWidgets, QtCore
 from hashlib import md5
 import os
 
@@ -10,21 +10,44 @@ class Login(QtWidgets.QDialog):
         self.ui = ui_login.Ui_Dialog()
         self.ui.setupUi(self)
         self.ui.login_button.clicked.connect(self.handleLogin)
+        self.ui.new_password_check.stateChanged.connect(self.new_password_clicked)
+        self.ui.change_password_button.clicked.connect(self.change_password_clicked)
 
-    def handleLogin(self):
-        username_in = self.ui.username_edit.text()
+    def password_match(self):
         password_in = self.ui.password_edit.text()
-        username_in = md5(username_in.encode()).hexdigest()
         password_in = md5(password_in.encode()).hexdigest()
-        username = md5('admin'.encode()).hexdigest()
         password = md5('admin'.encode()).hexdigest()
         if os.path.isfile('密码.txt'):
             with open('密码.txt', 'r', encoding='utf8') as f:
                 lines = f.read().splitlines()
-                if len(lines) == 2:
-                    [username, password] = lines
-        if (username_in == username and password_in == password):
+                if len(lines) == 1:
+                    [password] = lines
+        return password_in == password
+
+    def handleLogin(self):
+        username_in = self.ui.username_edit.text()
+        if self.password_match():
             self.accept()
         else:
             QtWidgets.QMessageBox.warning(
-                self, 'Error', '用户名或密码不正确')
+                self, 'Error', username_in + '的密码不正确')
+
+    def change_password_clicked(self):
+        new_password = self.ui.new_password_edit.text()
+        new_password = md5(new_password.encode()).hexdigest()
+        if self.password_match():
+            with open('密码.txt', 'w', encoding='utf8', newline='') as f:
+                f.write(new_password)
+            QtWidgets.QMessageBox.information(
+                self, 'OK', '密码修改成功')
+        else:
+            QtWidgets.QMessageBox.warning(
+                self, 'Error', '旧密码不正确')
+
+    def new_password_clicked(self, state):
+        if state == QtCore.Qt.Checked:
+            self.ui.new_password_edit.setEnabled(True)
+            self.ui.change_password_button.setEnabled(True)
+        else:
+            self.ui.new_password_edit.setEnabled(False)
+            self.ui.change_password_button.setEnabled(False)
