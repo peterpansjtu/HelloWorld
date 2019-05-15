@@ -1,8 +1,10 @@
-from PyQt5 import QtWidgets, QtCore
-from hashlib import md5
 import os
+from hashlib import md5
+
+from PyQt5 import QtWidgets, QtCore
 
 import ui_login
+
 
 class Login(QtWidgets.QDialog):
     def __init__(self, parent=None):

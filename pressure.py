@@ -11,10 +11,10 @@ from matplotlib.figure import Figure
 
 import MicroScanReader
 import OmronFinsTcp
+import login
 import plc_setting
 import result_generator
 import ui_main
-import login
 
 matplotlib.use("Qt5Agg")  # 声明使用QT5
 
@@ -44,18 +44,18 @@ class PressureChart(FigureCanvasQTAgg):
             self.thres_high.set_ydata(high)
         except:
             self.thres_high = self.axes.axhline(y=high, linewidth=0.5, color='blue')
-        #self.axes.plot()
+        # self.axes.plot()
         self.figure.canvas.draw()
-        #self.figure.canvas.flush_events()
+        # self.figure.canvas.flush_events()
 
     def draw_pressure(self, x, y):
         self.line.set_xdata(x)
         self.line.set_ydata(y)
         # self.axes.relim()
         # self.axes.autoscale_view()
-        #self.axes.plot()
+        # self.axes.plot()
         self.figure.canvas.draw()
-        #self.figure.canvas.flush_events()
+        # self.figure.canvas.flush_events()
 
 
 warnings_dict = {0: '硅胶使用寿命已到，请及时更换!\n',
@@ -251,8 +251,8 @@ class PressureUI(QDialog):
         if value > self.max_pressure:
             self.max_pressure = value
         self.chart.draw_pressure(self.timestamp, self.pressure)
-        #self.graphic_scene.addWidget(self.chart)
-        #self.ui.pressure_view.show()
+        # self.graphic_scene.addWidget(self.chart)
+        # self.ui.pressure_view.show()
 
     def io_table_timeout(self):
         io_table_in = self.plc.read('C0')
@@ -465,8 +465,8 @@ class PressureUI(QDialog):
     def tab_changed(self, index):
         if index == self.ui.tabs.indexOf(self.ui.set_tab):
             l = login.Login()
-            while l.exec_() != QDialog.Accepted:
-                pass
+            if l.exec_() != QDialog.Accepted:
+                self.ui.tabs.setCurrentWidget(self.ui.main_tab)
 
 
 if __name__ == '__main__':
