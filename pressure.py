@@ -194,8 +194,8 @@ class PressureUI(QDialog):
 
     # TODO handle PLC and scanner lost at runtime
     def dev_status_timeout(self):
-        warnings = self.plc.read('C201')
-        manual = self.plc.read('C203')
+        warnings = self.plc.read('C181')
+        manual = self.plc.read('C183')
         total_count = self.plc.read('D500')
         self.ui.total_count_lcd.display(total_count)
         silicate_count_current = self.plc.read('D504')
@@ -216,7 +216,7 @@ class PressureUI(QDialog):
 
     def pressure_timeout(self):
         # start read pulse
-        if not self.plc.test('C204', 0):
+        if not self.plc.test('C184', 0):
             if self.in_testing:
                 print('test finished')
                 pressure_var = self.plc.read('D526') / 100.0
@@ -257,7 +257,7 @@ class PressureUI(QDialog):
     def io_table_timeout(self):
         io_table_in = self.plc.read('C0')
         io_table_out = self.plc.read('C100')
-        if self.plc.test('C201', 9):
+        if self.plc.test('C181', 9):
             print('Button pushed')
             self.timestamp = []
             self.pressure = []
@@ -270,7 +270,7 @@ class PressureUI(QDialog):
                 print('read bar code: ', self.bar_code)
                 if self.bar_code:
                     self.ui.dev_bar_code_browser.setText(self.bar_code)
-                    self.plc.set('C200', 13)
+                    self.plc.set('C180', 13)
                     self.need_bar_code = False
                 else:
                     print('read bar code failed')
@@ -392,19 +392,19 @@ class PressureUI(QDialog):
         self.chart.draw_threshold(self.setting['pressure_thres_low'], self.setting['pressure_thres_high'])
 
     def reset_clicked(self):
-        self.plc.set('C200', 12)
+        self.plc.set('C180', 12)
         time.sleep(0.2)
-        self.plc.clear('C200', 12)
+        self.plc.clear('C180', 12)
 
     def auto_clicked(self):
-        self.plc.set('C200', 10)
+        self.plc.set('C180', 10)
         time.sleep(0.2)
-        self.plc.clear('C200', 10)
+        self.plc.clear('C180', 10)
 
     def stop_clicked(self):
-        self.plc.set('C200', 11)
+        self.plc.set('C180', 11)
         time.sleep(0.2)
-        self.plc.clear('C200', 11)
+        self.plc.clear('C180', 11)
 
     def save_setting_clicked(self):
         self.setting = self.get_setting_from_ui()
@@ -413,54 +413,54 @@ class PressureUI(QDialog):
         self.update_pressure_threshold()
 
     def total_count_clear_clicked(self):
-        self.plc.set('C200', 14)
+        self.plc.set('C180', 14)
         time.sleep(0.2)
-        self.plc.clear('C200', 14)
+        self.plc.clear('C180', 14)
 
     def silicate_count_current_clear_clicked(self):
-        self.plc.set('C200', 15)
+        self.plc.set('C180', 15)
         time.sleep(0.2)
-        self.plc.clear('C200', 15)
+        self.plc.clear('C180', 15)
 
     def io_table_out_0_clicked(self):
-        self.plc.set('C200', 0)
+        self.plc.set('C180', 0)
         time.sleep(0.2)
-        self.plc.clear('C200', 0)
+        self.plc.clear('C180', 0)
 
     def io_table_out_1_clicked(self):
-        self.plc.set('C200', 1)
+        self.plc.set('C180', 1)
         time.sleep(0.2)
-        self.plc.clear('C200', 1)
+        self.plc.clear('C180', 1)
 
     def io_table_out_2_clicked(self):
-        self.plc.set('C200', 2)
+        self.plc.set('C180', 2)
         time.sleep(0.2)
-        self.plc.clear('C200', 2)
+        self.plc.clear('C180', 2)
 
     def io_table_out_3_clicked(self):
-        self.plc.set('C200', 3)
+        self.plc.set('C180', 3)
         time.sleep(0.2)
-        self.plc.clear('C200', 3)
+        self.plc.clear('C180', 3)
 
     def io_table_out_4_clicked(self):
-        self.plc.set('C200', 4)
+        self.plc.set('C180', 4)
         time.sleep(0.2)
-        self.plc.clear('C200', 4)
+        self.plc.clear('C180', 4)
 
     def io_table_out_5_clicked(self):
-        self.plc.set('C200', 5)
+        self.plc.set('C180', 5)
         time.sleep(0.2)
-        self.plc.clear('C200', 5)
+        self.plc.clear('C180', 5)
 
     def io_table_out_6_clicked(self):
-        self.plc.set('C200', 6)
+        self.plc.set('C180', 6)
         time.sleep(0.2)
-        self.plc.clear('C200', 6)
+        self.plc.clear('C180', 6)
 
     def io_table_out_7_clicked(self):
-        self.plc.set('C200', 7)
+        self.plc.set('C180', 7)
         time.sleep(0.2)
-        self.plc.clear('C200', 7)
+        self.plc.clear('C180', 7)
 
     def tab_changed(self, index):
         if index == self.ui.tabs.indexOf(self.ui.set_tab):
