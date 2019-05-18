@@ -4,7 +4,7 @@ import time
 from datetime import date
 
 import matplotlib
-from PyQt5.QtCore import QTimer
+from PyQt5.QtCore import QTimer, QCoreApplication
 from PyQt5.QtWidgets import QDialog, QApplication, QGraphicsScene
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 from matplotlib.figure import Figure
@@ -32,8 +32,10 @@ class PressureChart(FigureCanvasQTAgg):
         self.axes.set_ylabel("Pressure(Kpa)")
         self.axes.set_xlabel("Time(second)")
         self.axes.set_xlim([0, 15.0])
-        self.axes.set_ylim([0, 100])
+        self.axes.set_ylim([0, 70])
+        self.axes.grid(True, linestyle='-.')
         self.line, = self.axes.plot([], [])
+        self.line.set_linewidth(0.5)
 
     def draw_threshold(self, low, high):
         try:
@@ -102,6 +104,7 @@ class PressureUI(QDialog):
         '''
         self.ui = ui_main.Ui_Dialog()
         self.ui.setupUi(self)
+        self.setWindowTitle(QCoreApplication.translate("Dialog", "气密量测系统"))
         self.ui.tabs.currentChanged.connect(self.tab_changed)
         self.io_table_in_label_list = [self.ui.io_table_in_label_0,
                                        self.ui.io_table_in_label_1,
@@ -119,7 +122,8 @@ class PressureUI(QDialog):
                                         self.ui.io_table_out_label_5,
                                         self.ui.io_table_out_label_6,
                                         self.ui.io_table_out_label_7]
-        self.variable_label_list = [self.ui.variable_label_0]
+        self.variable_label_list = [self.ui.variable_label_0, self.ui.variable_label_1]
+        self.variable_address_list = []
         if (os.path.isfile('lable_name.txt')):
             with open('lable_name.txt', 'r', encoding="utf8") as f:
                 for i, name in enumerate(f):
@@ -133,6 +137,7 @@ class PressureUI(QDialog):
         self.ui.auto_button.clicked.connect(self.auto_clicked)
         self.ui.stop_button.clicked.connect(self.stop_clicked)
         self.ui.save_setting_button.clicked.connect(self.save_setting_clicked)
+        self.ui.save_setting_button_2.clicked.connect(self.save_setting_clicked)
         self.ui.total_count_clear_button.clicked.connect(self.total_count_clear_clicked)
         self.ui.silicate_count_current_clear_button.clicked.connect(self.silicate_count_current_clear_clicked)
         self.ui.io_table_out_button_0.clicked.connect(self.io_table_out_0_clicked)
@@ -245,6 +250,8 @@ class PressureUI(QDialog):
             self.pressure_start_time = time.time()
             self.timestamp.append(0)
         value = self.plc.read('D524')
+        if value >= 65000:
+            value = 0
         value = value / 100.0
         self.pressure.append(value)
         self.ui.current_pressure_lcd.display(value)
@@ -266,14 +273,18 @@ class PressureUI(QDialog):
             self.ui.max_pressure_lcd.display(0)
             print(self.need_bar_code)
             if self.need_bar_code:
-                self.bar_code = self.scanner.read()
-                print('read bar code: ', self.bar_code)
-                if self.bar_code:
-                    self.ui.dev_bar_code_browser.setText(self.bar_code)
+                if self.ui.scanner_enable_checkbox.isEnabled():
+                    self.bar_code = self.scanner.read()
+                    print('read bar code: ', self.bar_code)
+                    if self.bar_code:
+                        self.ui.dev_bar_code_browser.setText(self.bar_code)
+                        self.plc.set('C180', 13)
+                        self.need_bar_code = False
+                    else:
+                        print('read bar code failed')
+                else:
                     self.plc.set('C180', 13)
                     self.need_bar_code = False
-                else:
-                    print('read bar code failed')
         if io_table_out & 1 << 5:
             self.ui.status_label.setText('OK')
             self.ui.status_label.setStyleSheet("font-size:48pt; font-weight:600; color:green")
@@ -297,7 +308,10 @@ class PressureUI(QDialog):
         scanner_ip = self.ui.code_scannner_ip_edit.text()
         scanner_port = int(self.ui.code_scanner_port_edit.text())
         plc_open = self.plc.openFins(plc_ip, plc_port)
-        scanner_open = self.scanner.open(scanner_ip, scanner_port)
+        if self.ui.scanner_enable_checkbox.isEnabled():
+            scanner_open = self.scanner.open(scanner_ip, scanner_port)
+        else:
+            scanner_open = True
         if plc_open and scanner_open:
             # TODO how to use status label
             self.ui.connection_label.setText("连接正常")
@@ -347,7 +361,7 @@ class PressureUI(QDialog):
 
     def get_setting_from_ui(self):
         setting = {}
-        setting['pressure_coef'] = float(self.ui.pressure_coef_edit.text())
+        # setting['pressure_coef'] = float(self.ui.pressure_coef_edit.text())
         setting['pressure_var'] = float(self.ui.pressure_var_edit.text())
         setting['pumping_time'] = float(self.ui.pumping_time_edit.text())
         setting['pressure_hold_time'] = float(self.ui.pressure_hold_time_edit.text())
@@ -356,6 +370,9 @@ class PressureUI(QDialog):
         setting['pressure_approx'] = float(self.ui.pressure_approx_edit.text())
         setting['pressure_target'] = float(self.ui.pressure_target_edit.text())
         setting['silicate_count_total'] = float(self.ui.silicate_count_total_edit.text())
+        setting['pump_stop_timeout'] = float(self.ui.pump_stop_timeout_edit.text())
+        setting['reserve1'] = float(self.ui.variable_edit_0.text())
+        setting['reserve2'] = float(self.ui.variable_edit_1.text())
         return setting
 
     def save_plc_setting(self, setting):
@@ -364,7 +381,7 @@ class PressureUI(QDialog):
 
     def apply_plc_setting_to_plc(self, setting):
         # TODO check update UI when loading csv file
-        self.plc.write('D508', int(setting['pressure_coef'] * 100))
+        # self.plc.write('D508', int(setting['pressure_coef'] * 100))
         self.plc.write('D510', int(setting['pressure_var'] * 100))
         self.plc.write('D512', int(setting['pressure_target'] * 100))
         self.plc.write('D514', int(setting['pressure_approx'] * 100))
@@ -373,10 +390,13 @@ class PressureUI(QDialog):
         self.plc.write('D520', int(str(int(setting['pressure_hold_time'] * 10)), base=16))
         self.plc.write('D522', int(str(int(setting['pumping_time'] * 10)), base=16))
         self.plc.write('D502', int(setting['silicate_count_total']))
+        self.plc.write('D532', int(str(int(setting['pump_stop_timeout'])), base=16))
+        self.plc.write('D534', int(str(int(setting['reserve1'] * 10)), base=16))
+        self.plc.write('D536', int(str(int(setting['reserve2'] * 10)), base=16))
 
     def apply_plc_setting_to_ui(self, setting):
         try:
-            self.ui.pressure_coef_edit.setText(str(setting['pressure_coef']))
+            # self.ui.pressure_coef_edit.setText(str(setting['pressure_coef']))
             self.ui.pressure_var_edit.setText(str(setting['pressure_var']))
             self.ui.pumping_time_edit.setText(str(setting['pumping_time']))
             self.ui.pressure_hold_time_edit.setText(str(setting['pressure_hold_time']))
@@ -385,6 +405,7 @@ class PressureUI(QDialog):
             self.ui.pressure_approx_edit.setText(str(setting['pressure_approx']))
             self.ui.pressure_target_edit.setText(str(setting['pressure_target']))
             self.ui.silicate_count_total_edit.setText(str(int(setting['silicate_count_total'])))
+            self.ui.pump_stop_timeout_edit.setText(str(int(setting['pump_stop_timeout'])))
         except:
             pass
 
@@ -463,7 +484,7 @@ class PressureUI(QDialog):
         self.plc.clear('C180', 7)
 
     def tab_changed(self, index):
-        if index == self.ui.tabs.indexOf(self.ui.set_tab):
+        if index == self.ui.tabs.indexOf(self.ui.set_tab) or index == self.ui.tabs.indexOf(self.ui.set_tab_2):
             l = login.Login()
             if l.exec_() != QDialog.Accepted:
                 self.ui.tabs.setCurrentWidget(self.ui.main_tab)

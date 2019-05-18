@@ -11,6 +11,7 @@ class Login(QtWidgets.QDialog):
         super(Login, self).__init__(parent)
         self.ui = ui_login.Ui_Dialog()
         self.ui.setupUi(self)
+        self.setWindowTitle(QtCore.QCoreApplication.translate("Dialog", "登录界面"))
         self.ui.login_button.clicked.connect(self.handleLogin)
         self.ui.new_password_check.stateChanged.connect(self.new_password_clicked)
         self.ui.change_password_button.clicked.connect(self.change_password_clicked)
