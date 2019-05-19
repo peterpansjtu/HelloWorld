@@ -1,12 +1,13 @@
 import os
 import sys
 import time
+import traceback
 from datetime import date
 
 import matplotlib
 from matplotlib.ticker import MultipleLocator, FormatStrFormatter
 from PyQt5.QtCore import QTimer, QCoreApplication
-from PyQt5.QtWidgets import QDialog, QApplication, QGraphicsScene
+from PyQt5.QtWidgets import QDialog, QApplication, QGraphicsScene, QMessageBox
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 from matplotlib.figure import Figure
 
@@ -64,6 +65,27 @@ class PressureChart(FigureCanvasQTAgg):
         self.figure.canvas.draw()
         # self.figure.canvas.flush_events()
 
+class TimerMessageBox(QMessageBox):
+    def __init__(self, timeout=3, parent=None):
+        super(TimerMessageBox, self).__init__(parent)
+        self.setWindowTitle("wait")
+        self.time_to_wait = timeout
+        self.setText("{0} 秒后重新连接PLC".format(timeout))
+        self.setStandardButtons(QMessageBox.NoButton)
+        self.timer = QTimer(self)
+        self.timer.setInterval(1000)
+        self.timer.timeout.connect(self.changeContent)
+        self.timer.start()
+
+    def changeContent(self):
+        self.setText("{0} 秒后重新连接PLC".format(self.time_to_wait))
+        self.time_to_wait -= 1
+        if self.time_to_wait <= 0:
+            self.close()
+
+    def closeEvent(self, event):
+        self.timer.stop()
+        event.accept()
 
 warnings_dict = {0: '硅胶使用寿命已到，请及时更换!\n',
                  1: '热保护跳闸，请手动复位\n',
@@ -145,6 +167,7 @@ class PressureUI(QDialog):
         self.ui.save_setting_button_2.clicked.connect(self.save_setting_clicked)
         self.ui.total_count_clear_button.clicked.connect(self.total_count_clear_clicked)
         self.ui.silicate_count_current_clear_button.clicked.connect(self.silicate_count_current_clear_clicked)
+        self.ui.scanner_enable_checkbox.clicked.connect(self.scanner_connect)
         self.ui.io_table_out_button_0.clicked.connect(self.io_table_out_0_clicked)
         self.ui.io_table_out_button_1.clicked.connect(self.io_table_out_1_clicked)
         self.ui.io_table_out_button_2.clicked.connect(self.io_table_out_2_clicked)
@@ -196,120 +219,164 @@ class PressureUI(QDialog):
         '''
         self.bc_receive = None
 
-    '''
-    def bar_code_update(self, bar_code):
-        self.bar_code = bar_code
-        self.ui.dev_bar_code_browser.setText(self.bar_code)
-    '''
+    def scanner_connect(self):
+        if self.ui.scanner_enable_checkbox.isChecked():
+            scanner_ip = self.ui.code_scannner_ip_edit.text()
+            scanner_port = int(self.ui.code_scanner_port_edit.text())
+            if not self.scanner.open(scanner_ip, scanner_port):
+                self.ui.connection_label.setText('扫码枪连接失败')
+                self.ui.connection_label.setStyleSheet("font-size:24pt; font-weight:600; color:#ff0000")
+            else:
+                self.ui.connection_label.setText("连接正常")
+                self.ui.connection_label.setStyleSheet("font-size:24pt; font-weight:600; color:#00ff00")
+        else:
+            self.scanner.close()
+
+    def plc_connect(self):
+        plc_ip = self.ui.plc_ip_edit.text()
+        plc_port = int(self.ui.plc_port_edit.text())
+        if self.plc.openFins(plc_ip, plc_port):
+            self.ui.connection_label.setText("连接正常")
+            self.ui.connection_label.setStyleSheet("font-size:24pt; font-weight:600; color:#00ff00")
+            self.pressure_timer.start()
+            self.dev_status_timer.start()
+            self.io_table_timer.start()
+        else:
+            error_text = 'PLC重连失败,重连中'
+            self.ui.connection_label.setText(error_text)
+            self.ui.connection_label.setStyleSheet("font-size:24pt; font-weight:600; color:#ff0000")
+            QTimer.singleShot(5000, self.plc_connect)
 
     # TODO handle PLC and scanner lost at runtime
     def dev_status_timeout(self):
-        warnings = self.plc.read('C181')
-        manual = self.plc.read('C183')
-        total_count = self.plc.read('D500')
-        self.ui.total_count_lcd.display(total_count)
-        silicate_count_current = self.plc.read('D504')
-        self.ui.silicate_count_current_lcd.display(silicate_count_current)
-        if warnings & 1 << 8:
-            self.ui.auto_button.setStyleSheet("font-size:16pt; background-color: green")
-        else:
-            self.ui.auto_button.setStyleSheet('font-size:16pt')
-        text = ''
-        for bit in warnings_dict:
-            if (warnings & 1 << bit):
-                text += warnings_dict[bit]
-        for bit in manual_dict:
-            if (manual & 1 << bit):
-                text += manual_dict[bit]
-        self.ui.dev_info_browser.setText(text)
-        self.ui.dev_info_browser.setStyleSheet("font-size:12pt; font-weight:600; color:#ff0000")
+        try:
+            warnings = self.plc.read('C181')
+            manual = self.plc.read('C183')
+            total_count = self.plc.read('D500')
+            self.ui.total_count_lcd.display(total_count)
+            silicate_count_current = self.plc.read('D504')
+            self.ui.silicate_count_current_lcd.display(silicate_count_current)
+            d524 = self.plc.read('D524')
+            if d524 > 65000:
+                d524 = 0
+            self.ui.d524_lcd.display(d524 / 100.0)
+            if warnings & 1 << 8:
+                self.ui.auto_button.setStyleSheet("font-size:16pt; background-color: green")
+            else:
+                self.ui.auto_button.setStyleSheet('font-size:16pt')
+            text = ''
+            for bit in warnings_dict:
+                if (warnings & 1 << bit):
+                    text += warnings_dict[bit]
+            for bit in manual_dict:
+                if (manual & 1 << bit):
+                    text += manual_dict[bit]
+            self.ui.dev_info_browser.setText(text)
+            self.ui.dev_info_browser.setStyleSheet("font-size:12pt; font-weight:600; color:#ff0000")
+        except Exception as e:
+            print('dev_status_timeout: ', repr(e))
+            traceback.print_exc()
 
     def pressure_timeout(self):
         # start read pulse
-        if not self.plc.test('C184', 0):
-            if self.in_testing:
-                print('test finished')
-                pressure_var = self.plc.read('D526') / 100.0
-                print(pressure_var)
-                pressure_var_sign = self.plc.read('D528')
-                if pressure_var_sign == 1:
-                    pressure_var = -pressure_var
-                self.ui.max_pressure_lcd.display(pressure_var)
-                io_table_out = self.plc.read('C100')
-                if io_table_out & 1 << 5:
-                    test_result = 'OK'
-                elif io_table_out & 1 << 6:
-                    test_result = 'NG'
-                else:
-                    print('Should not happen')
-                    test_result = 'NG'
-                self.result_file.add_result(format(time.time() - self.pressure_start_time, '.1f'), pressure_var,
-                                            test_result, self.bar_code)
-                self.in_testing = False
-                self.need_bar_code = True
-            return
-        if len(self.timestamp) > 0:
-            self.timestamp.append(time.time() - self.pressure_start_time)
-        else:
-            self.in_testing = True
-            self.pressure_start_time = time.time()
-            self.timestamp.append(0)
-        value = self.plc.read('D524')
-        if value >= 65000:
-            value = 0
-        value = value / 100.0
-        self.pressure.append(value)
-        self.ui.current_pressure_lcd.display(value)
-        if value > self.max_pressure:
-            self.max_pressure = value
-        self.chart.draw_pressure(self.timestamp, self.pressure)
-        # self.graphic_scene.addWidget(self.chart)
-        # self.ui.pressure_view.show()
+        try:
+            if not self.plc.test('C184', 0):
+                if self.in_testing:
+                    print('test finished')
+                    pressure_var = self.plc.read('D526') / 100.0
+                    print(pressure_var)
+                    pressure_var_sign = self.plc.read('D528')
+                    if pressure_var_sign == 1:
+                        pressure_var = -pressure_var
+                    self.ui.max_pressure_lcd.display(pressure_var)
+                    io_table_out = self.plc.read('C100')
+                    if io_table_out & 1 << 5:
+                        test_result = 'OK'
+                    elif io_table_out & 1 << 6:
+                        test_result = 'NG'
+                    else:
+                        print('Should not happen')
+                        test_result = 'NG'
+                    self.ui.d538_lcd.display(self.plc.read('D538') / 100.0)
+                    self.ui.d540_lcd.display(self.plc.read('D540') / 100.0)
+                    self.result_file.add_result(format(time.time() - self.pressure_start_time, '.1f'), pressure_var,
+                                                test_result, self.bar_code)
+                    self.bar_code = ''
+                    self.in_testing = False
+                    self.need_bar_code = True
+                return
+            if len(self.timestamp) > 0:
+                self.timestamp.append(time.time() - self.pressure_start_time)
+            else:
+                self.in_testing = True
+                self.pressure_start_time = time.time()
+                self.timestamp.append(0)
+            value = self.plc.read('D524')
+            if value >= 65000:
+                value = 0
+            value = value / 100.0
+            self.pressure.append(value)
+            self.ui.current_pressure_lcd.display(value)
+            if value > self.max_pressure:
+                self.max_pressure = value
+            self.chart.draw_pressure(self.timestamp, self.pressure)
+            # self.graphic_scene.addWidget(self.chart)
+            # self.ui.pressure_view.show()
+        except Exception as e:
+            print('pressure_timeout: ', repr(e))
+            traceback.print_exc()
 
     def io_table_timeout(self):
-        io_table_in = self.plc.read('C0')
-        io_table_out = self.plc.read('C100')
-        if self.plc.test('C181', 9):
-            print('Button pushed')
-            self.timestamp = []
-            self.pressure = []
-            self.ui.status_label.setText('')
-            self.ui.dev_bar_code_browser.setText('')
-            self.ui.max_pressure_lcd.display(0)
-            print(self.need_bar_code)
-            if self.need_bar_code:
-                if self.ui.scanner_enable_checkbox.isChecked():
-                    self.bar_code = self.scanner.read()
-                    print('read bar code: ', self.bar_code)
-                    if self.bar_code:
-                        self.ui.dev_bar_code_browser.setText(self.bar_code)
-                        print('write C180 to start')
-                        self.plc.set('C180', 13)
-                        self.need_bar_code = False
+        try:
+            io_table_in = self.plc.read('C0')
+            io_table_out = self.plc.read('C100')
+            if self.plc.test('C181', 9):
+                print('Button pushed')
+                self.timestamp = []
+                self.pressure = []
+                self.ui.status_label.setText('')
+                self.ui.dev_bar_code_browser.setText('')
+                self.ui.max_pressure_lcd.display(0)
+                print(self.need_bar_code)
+                if self.need_bar_code:
+                    if self.ui.scanner_enable_checkbox.isChecked():
+                        self.bar_code = self.scanner.read()
+                        print('read bar code: ', self.bar_code)
+                        if self.bar_code:
+                            self.ui.dev_bar_code_browser.setText(self.bar_code)
+                            print('write C180 to start')
+                            self.plc.set('C180', 13)
+                            self.need_bar_code = False
+                        else:
+                            print('read bar code failed')
                     else:
-                        print('read bar code failed')
+                        self.bar_code = ''
+                        self.ui.dev_bar_code_browser.setText(self.bar_code)
+                        if False:
+                            print('read bar code failed')
+                        else:
+                            print('write C180 to start without bar code')
+                            self.plc.set('C180', 13)
+                            self.need_bar_code = False
+            if io_table_out & 1 << 5:
+                self.ui.status_label.setText('OK')
+                self.ui.status_label.setStyleSheet("font-size:48pt; font-weight:600; color:green")
+            if io_table_out & 1 << 6:
+                self.ui.status_label.setText('NG')
+                self.ui.status_label.setStyleSheet("font-size:48pt; font-weight:600; color:red")
+            for label in self.io_table_in_label_list:
+                if io_table_in & (1 << self.io_table_in_label_list.index(label)):
+                    label.setStyleSheet("QLabel {background-color: green}")
                 else:
-                    self.bar_code = ''
-                    self.ui.dev_bar_code_browser.setText(self.bar_code)
-                    print('write C180 to start without bar code')
-                    self.plc.set('C180', 13)
-                    self.need_bar_code = False
-        if io_table_out & 1 << 5:
-            self.ui.status_label.setText('OK')
-            self.ui.status_label.setStyleSheet("font-size:48pt; font-weight:600; color:green")
-        if io_table_out & 1 << 6:
-            self.ui.status_label.setText('NG')
-            self.ui.status_label.setStyleSheet("font-size:48pt; font-weight:600; color:red")
-        for label in self.io_table_in_label_list:
-            if io_table_in & (1 << self.io_table_in_label_list.index(label)):
-                label.setStyleSheet("QLabel {background-color: green}")
-            else:
-                label.setStyleSheet("QLabel {background-color: red}")
-        for label in self.io_table_out_label_list:
-            if io_table_out & (1 << self.io_table_out_label_list.index(label)):
-                label.setStyleSheet("QLabel {background-color: green}")
-            else:
-                label.setStyleSheet("QLabel {background-color: red}")
+                    label.setStyleSheet("QLabel {background-color: red}")
+            for label in self.io_table_out_label_list:
+                if io_table_out & (1 << self.io_table_out_label_list.index(label)):
+                    label.setStyleSheet("QLabel {background-color: green}")
+                else:
+                    label.setStyleSheet("QLabel {background-color: red}")
+        except Exception as e:
+            print('io_table_timeout: ', repr(e))
+            traceback.print_exc()
 
     def connect_clicked(self):
         plc_ip = self.ui.plc_ip_edit.text()
@@ -329,16 +396,6 @@ class PressureUI(QDialog):
             self.dev_status_timer.start()
             self.io_table_timer.start()
             self.apply_plc_setting_to_plc(self.setting)
-            '''
-            bar code receive setup
-            
-            bc_receive_ip = self.ui.local_ip_edit.text()
-            bc_receive_port = int(self.ui.bc_receive_port_edit.text())
-            print(bc_receive_ip, bc_receive_port)
-            self.bc_receive = bar_code_recevce.BarCodeReceiveThread(bc_receive_ip, bc_receive_port)
-            self.bc_receive.signal.connect(self.bar_code_update)
-            self.bc_receive.start()
-            '''
         else:
             error_text = ''
             if not plc_open:
@@ -350,12 +407,13 @@ class PressureUI(QDialog):
             self.ui.connection_label.setStyleSheet("font-size:24pt; font-weight:600; color:#ff0000")
 
     def plc_connect_failed(self):
-        error_text = 'PLC断开'
+        error_text = 'PLC断开,重连中'
         self.ui.connection_label.setText(error_text)
         self.ui.connection_label.setStyleSheet("font-size:24pt; font-weight:600; color:#ff0000")
         self.pressure_timer.stop()
         self.dev_status_timer.stop()
         self.io_table_timer.stop()
+        QTimer.singleShot(5000, self.plc_connect)
 
     def load_plc_setting(self):
         plcsetting = plc_setting.PLCSetting()

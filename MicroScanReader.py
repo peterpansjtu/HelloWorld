@@ -1,23 +1,37 @@
 import socket
+import traceback
 
 def most_frequent(List):
     return max(set(List), key = List.count)
 
 class MicroScanReader(object):
     def __init__(self, ):
-        self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.client = None
+        return
 
     def __del__(self):
-        self.client.close()
+        try:
+            self.client.close()
+        except:
+            pass
 
     def open(self, ip, port):
         try:
+            self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             self.client.settimeout(5.0)
             self.client.connect((ip, int(port)))
-        except:
+        except Exception as e:
             print('MicroScan connect failed')
+            traceback.print_exc()
             return False
         return True
+
+    def close(self):
+        try:
+            self.client.close()
+            self.client = None
+        except:
+            traceback.print_exc()
 
     def read(self):
         recv = []
