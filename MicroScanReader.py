@@ -1,5 +1,7 @@
 import socket
 
+def most_frequent(List):
+    return max(set(List), key = List.count)
 
 class MicroScanReader(object):
     def __init__(self, ):
@@ -18,15 +20,15 @@ class MicroScanReader(object):
         return True
 
     def read(self):
-        self.client.settimeout(0.5)
+        recv = []
+        self.client.settimeout(2)
         try:
-            recv = self.client.recv(4096)
+            for i in range(0, 3):
+                code = str(self.client.recv(4096), encoding='utf-8').split('\r\n')
+                for c in code:
+                    recv.append(c)
         except:
             self.client.settimeout(None)
-            return ''
+            recv.append('')
         self.client.settimeout(None)
-        code = str(recv, encoding='utf-8')
-        code = code.split('\r\n')
-        if code:
-            return code[0]
-        return ''
+        return most_frequent(recv)

@@ -4,6 +4,7 @@ import time
 from datetime import date
 
 import matplotlib
+from matplotlib.ticker import MultipleLocator, FormatStrFormatter
 from PyQt5.QtCore import QTimer, QCoreApplication
 from PyQt5.QtWidgets import QDialog, QApplication, QGraphicsScene
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
@@ -34,6 +35,10 @@ class PressureChart(FigureCanvasQTAgg):
         self.axes.set_xlim([0, 15.0])
         self.axes.set_ylim([0, 70])
         self.axes.grid(True, linestyle='-.')
+        xmajorLocator = MultipleLocator(1.0)
+        self.axes.xaxis.set_major_locator(xmajorLocator)
+        ymajorLocator = MultipleLocator(5)
+        self.axes.yaxis.set_major_locator(ymajorLocator)
         self.line, = self.axes.plot([], [])
         self.line.set_linewidth(0.5)
 
@@ -273,16 +278,20 @@ class PressureUI(QDialog):
             self.ui.max_pressure_lcd.display(0)
             print(self.need_bar_code)
             if self.need_bar_code:
-                if self.ui.scanner_enable_checkbox.isEnabled():
+                if self.ui.scanner_enable_checkbox.isChecked():
                     self.bar_code = self.scanner.read()
                     print('read bar code: ', self.bar_code)
                     if self.bar_code:
                         self.ui.dev_bar_code_browser.setText(self.bar_code)
+                        print('write C180 to start')
                         self.plc.set('C180', 13)
                         self.need_bar_code = False
                     else:
                         print('read bar code failed')
                 else:
+                    self.bar_code = ''
+                    self.ui.dev_bar_code_browser.setText(self.bar_code)
+                    print('write C180 to start without bar code')
                     self.plc.set('C180', 13)
                     self.need_bar_code = False
         if io_table_out & 1 << 5:
@@ -308,7 +317,7 @@ class PressureUI(QDialog):
         scanner_ip = self.ui.code_scannner_ip_edit.text()
         scanner_port = int(self.ui.code_scanner_port_edit.text())
         plc_open = self.plc.openFins(plc_ip, plc_port)
-        if self.ui.scanner_enable_checkbox.isEnabled():
+        if self.ui.scanner_enable_checkbox.isChecked():
             scanner_open = self.scanner.open(scanner_ip, scanner_port)
         else:
             scanner_open = True
