@@ -92,7 +92,8 @@ warnings_dict = {0: '硅胶使用寿命已到，请及时更换!\n',
                  2: '急停中\n',
                  3: '光栅异常\n',
                  4: '没有读到条码\n',
-                 5: '重新开始请复位\n'
+                 5: '重新开始请复位\n',
+                 7: '抽气超时\n'
                  }
 
 manual_dict = {0: '真空泵手动中\n',
@@ -297,10 +298,10 @@ class PressureUI(QDialog):
                     else:
                         print('Should not happen')
                         test_result = 'NG'
-                    self.ui.d538_lcd.display(self.plc.read('D538') / 100.0)
                     self.ui.d540_lcd.display(self.plc.read('D540') / 100.0)
-                    self.result_file.add_result(format(time.time() - self.pressure_start_time, '.1f'), pressure_var,
-                                                test_result, self.bar_code)
+                    if not self.plc.test('C181', 7):
+                        self.result_file.add_result(format(time.time() - self.pressure_start_time, '.1f'), pressure_var,
+                                                    test_result, self.bar_code)
                     self.bar_code = ''
                     self.in_testing = False
                     self.need_bar_code = True
@@ -330,7 +331,8 @@ class PressureUI(QDialog):
         try:
             io_table_in = self.plc.read('C0')
             io_table_out = self.plc.read('C100')
-            if self.plc.test('C181', 9):
+            warning = self.plc.read('C181')
+            if warning & 1 << 9:
                 print('Button pushed')
                 self.timestamp = []
                 self.pressure = []
@@ -358,6 +360,8 @@ class PressureUI(QDialog):
                             print('write C180 to start without bar code')
                             self.plc.set('C180', 13)
                             self.need_bar_code = False
+            if warning & 1 << 6:
+                self.ui.d538_lcd.display(self.plc.read('D538') / 100.0)
             if io_table_out & 1 << 5:
                 self.ui.status_label.setText('OK')
                 self.ui.status_label.setStyleSheet("font-size:48pt; font-weight:600; color:green")
