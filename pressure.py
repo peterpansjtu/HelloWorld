@@ -462,7 +462,7 @@ class PressureUI(QDialog):
         self.plc.write('D522', int(str(int(setting['pumping_time'] * 10)), base=16))
         self.plc.write('D502', int(setting['silicate_count_total']))
         self.plc.write('D532', int(str(int(setting['pump_stop_timeout'])), base=16))
-        self.plc.write('D534', int(str(int(setting['reserve1'] * 10)), base=16))
+        self.plc.write('D534', int(str(int(setting['reserve1'] * 100)), base=10))
         self.plc.write('D536', int(str(int(setting['reserve2'] * 10)), base=16))
 
     def apply_plc_setting_to_ui(self, setting):
@@ -477,6 +477,8 @@ class PressureUI(QDialog):
             self.ui.pressure_target_edit.setText(str(setting['pressure_target']))
             self.ui.silicate_count_total_edit.setText(str(int(setting['silicate_count_total'])))
             self.ui.pump_stop_timeout_edit.setText(str(int(setting['pump_stop_timeout'])))
+            self.ui.variable_edit_0.setText(str(float(setting['reserve1'])))
+            self.ui.variable_edit_1.setText(str(float(setting['reserve2'])))
         except:
             pass
 

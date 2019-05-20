@@ -1,12 +1,15 @@
 import socket
 import traceback
 
-def most_frequent(List):
-    return max(set(List), key = List.count)
+from PyQt5.QtCore import QThread
 
-class MicroScanReader(object):
+
+class MicroScanReader(QThread):
     def __init__(self, ):
+        super(MicroScanReader, self).__init__()
         self.client = None
+        self.bar_code = ''
+        self.working = False
         return
 
     def __del__(self):
@@ -24,25 +27,35 @@ class MicroScanReader(object):
             print('MicroScan connect failed')
             traceback.print_exc()
             return False
+        self.working = True
+        self.client.settimeout(2.0)
+        self.start()
         return True
 
     def close(self):
         try:
+            self.working = False
+            self.wait()
             self.client.close()
             self.client = None
+            self.bar_code = ''
         except:
             traceback.print_exc()
 
-    def read(self):
-        recv = []
-        self.client.settimeout(2)
+    def _read(self):
         try:
-            for i in range(0, 3):
-                code = str(self.client.recv(4096), encoding='utf-8').split('\r\n')
-                for c in code:
-                    recv.append(c)
+            code = str(self.client.recv(4096), encoding='utf-8').split('\r\n')[0]
         except:
-            self.client.settimeout(None)
-            recv.append('')
-        self.client.settimeout(None)
-        return most_frequent(recv)
+            print('read bar code failed, return ""')
+            code = ''
+        return code
+
+    def run(self):
+        while self.working == True:
+            code = self._read()
+            print(code)
+            if (not code) or (code not in self.bar_code):
+                self.bar_code = code
+
+    def read(self):
+        return self.bar_code
