@@ -236,6 +236,8 @@ class PressureUI(QDialog):
     def plc_connect(self):
         plc_ip = self.ui.plc_ip_edit.text()
         plc_port = int(self.ui.plc_port_edit.text())
+        self.plc = OmronFinsTcp.OmronPLC()
+        self.plc.signal.connect(self.plc_connect_failed)
         if self.plc.openFins(plc_ip, plc_port):
             self.ui.connection_label.setText("连接正常")
             self.ui.connection_label.setStyleSheet("font-size:24pt; font-weight:600; color:#00ff00")
@@ -422,7 +424,7 @@ class PressureUI(QDialog):
             self.plc.close()
         except:
             pass
-        QTimer.singleShot(5000, self.plc_connect)
+        QTimer.singleShot(5000, self.connect_clicked)
 
     def load_plc_setting(self):
         plcsetting = plc_setting.PLCSetting()

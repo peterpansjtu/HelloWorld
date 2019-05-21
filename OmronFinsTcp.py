@@ -327,6 +327,7 @@ class OmronPLC(QObject):
         self.in_error = False
 
     def openFins(self, address, port=9600):
+        self.in_error = False
         self.conType = 'FINS'
         self.conn = OmronPlcFinsTcp(address, port)
         self.plcType = self.conn.openn()
@@ -337,7 +338,11 @@ class OmronPLC(QObject):
 
     def close(self):
         if self.conType == 'FINS':
-            self.conn.close()
+            try:
+                self.conn.close()
+            except:
+                pass
+        self.in_error = False
 
     def readMemC(self, mem, length):
         memSpec = re.search(r'(.)([0-9]*):?([0-9]*)', mem).groups()
