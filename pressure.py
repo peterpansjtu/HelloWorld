@@ -406,17 +406,22 @@ class PressureUI(QDialog):
                 error_text += 'PLC '
             if not scanner_open:
                 error_text += '扫码枪 '
-            error_text += '断开'
+            error_text += '断开,重连中...'
             self.ui.connection_label.setText(error_text)
             self.ui.connection_label.setStyleSheet("font-size:24pt; font-weight:600; color:#ff0000")
+            QTimer.singleShot(5000, self.connect_clicked)
 
     def plc_connect_failed(self):
-        error_text = 'PLC断开,重连中'
-        self.ui.connection_label.setText(error_text)
-        self.ui.connection_label.setStyleSheet("font-size:24pt; font-weight:600; color:#ff0000")
-        self.pressure_timer.stop()
-        self.dev_status_timer.stop()
-        self.io_table_timer.stop()
+        try:
+            error_text = 'PLC断开,重连中'
+            self.ui.connection_label.setText(error_text)
+            self.ui.connection_label.setStyleSheet("font-size:24pt; font-weight:600; color:#ff0000")
+            self.pressure_timer.stop()
+            self.dev_status_timer.stop()
+            self.io_table_timer.stop()
+            self.plc.close()
+        except:
+            pass
         QTimer.singleShot(5000, self.plc_connect)
 
     def load_plc_setting(self):

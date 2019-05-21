@@ -28,7 +28,7 @@ class MicroScanReader(QThread):
             traceback.print_exc()
             return False
         self.working = True
-        self.client.settimeout(2.0)
+        self.client.settimeout(1.0)
         self.start()
         return True
 
