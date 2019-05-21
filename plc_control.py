@@ -1,17 +1,32 @@
 import socket
+import threading
+import time
 
 
 class PLCControl(object):
-    def __init__(self, ip, port):
-        self.__error = False
-        self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        try:
-            self.client.connect((ip, int(port)))
-        except:
-            self.__error = True
+    #signal = pyqtSignal(str, name='event')
+    def __init__(self, config_file, ip, port = 9600):
+        super(PLCControl, self).__init__()
+        self.ip = ip
+        self.port = port
+        self.config_file = config_file
+        self.poll_thread = threading.Thread(target=self.__poll)
 
     def __del__(self):
-        self.client.close()
+        #self.client.close()
+        pass
+
+    def __poll(self):
+        '''
+        track register's change to generate event
+        event: start, stop, disconnect, warning
+        '''
+        while True:
+            print(self.config_file)
+            time.sleep(1)
+
+    def start(self):
+        self.poll_thread.start()
 
     def in_error(self):
         return self.__error
@@ -37,7 +52,8 @@ class PLCControl(object):
 
 
 if __name__ == '__main__':
-    plc = PLCControl('192.168.0.100', 2001)
+    plc = PLCControl('asd', '192.168.0.100', 2001)
     print('connect')
     # plc.set(1, 12)
-    print(plc.get(1))
+    plc.start()
+    print('asdfdsf')
