@@ -2,11 +2,12 @@
 
 # Form implementation generated from reading ui file 'ui_main.ui'
 #
-# Created by: PyQt5 UI code generator 5.11.3
+# Created by: PyQt5 UI code generator 5.12.2
 #
 # WARNING! All changes made in this file will be lost!
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+
 
 class Ui_Dialog(object):
     def setupUi(self, Dialog):
@@ -395,6 +396,9 @@ class Ui_Dialog(object):
         self.silicate_count_current_lcd = QtWidgets.QLCDNumber(self.frame)
         self.silicate_count_current_lcd.setGeometry(QtCore.QRect(330, 480, 201, 51))
         self.silicate_count_current_lcd.setObjectName("silicate_count_current_lcd")
+        self.label_77 = QtWidgets.QLabel(self.frame)
+        self.label_77.setGeometry(QtCore.QRect(510, 420, 151, 41))
+        self.label_77.setObjectName("label_77")
         self.tabs.addTab(self.set_tab, "")
         self.network_tab = QtWidgets.QWidget()
         self.network_tab.setObjectName("network_tab")
@@ -556,6 +560,7 @@ class Ui_Dialog(object):
         self.label_75.setText(_translate("Dialog", "<html><head/><body><p><span style=\" font-size:16pt;\">硅胶寿命次数设定</span></p></body></html>"))
         self.silicate_count_total_edit.setText(_translate("Dialog", "10000"))
         self.silicate_count_current_clear_button.setText(_translate("Dialog", "清零"))
+        self.label_77.setText(_translate("Dialog", "<html><head/><body><p><span style=\" font-size:16pt; color:#ff0000;\">不能超过30000</span></p></body></html>"))
         self.tabs.setTabText(self.tabs.indexOf(self.set_tab), _translate("Dialog", "参数设定"))
         self.label_59.setText(_translate("Dialog", "<html><head/><body><p>扫码枪地址</p></body></html>"))
         self.code_scannner_ip_edit.setText(_translate("Dialog", "192.168.0.100"))
@@ -579,4 +584,5 @@ class Ui_Dialog(object):
         self.lableaasd_2.setText(_translate("Dialog", "<html><head/><body><p><span style=\" color:#ff5500;\">保压初始值(Kpa):</span></p></body></html>"))
         self.lableaasd_3.setText(_translate("Dialog", "<html><head/><body><p><span style=\" color:#ff5500;\">保压结束值(Kpa):</span></p></body></html>"))
         self.lableaasd_4.setText(_translate("Dialog", "<html><head/><body><p><span style=\" color:#ff5500;\">实时负压值(Kpa):</span></p></body></html>"))
+
 

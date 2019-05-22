@@ -2,6 +2,7 @@
 import re
 import socket
 import struct
+import traceback
 
 from PyQt5.QtCore import QObject, pyqtSignal
 
@@ -38,6 +39,7 @@ def int_to_byte4(k):
 
 
 def int_to_byte2(k):
+    print('int_to_byte2: ', k)
     if k in int2byte_dict:
         return int2byte_dict[k]
     return k.to_bytes(2, byteorder='big')
@@ -387,6 +389,7 @@ class OmronPLC(QObject):
                 value = value | (1 << bit)
                 self.writeMemC(address, [value])
         except:
+            traceback.print_exc()
             self.in_error = True
             self.signal.emit('failed')
 
@@ -397,6 +400,7 @@ class OmronPLC(QObject):
                 value = value & ~(1 << bit)
                 self.writeMemC(address, [value])
         except:
+            traceback.print_exc()
             self.in_error = True
             self.signal.emit('failed')
 
@@ -407,6 +411,7 @@ class OmronPLC(QObject):
                 value = value & (1 << bit)
                 return value != 0
         except:
+            traceback.print_exc()
             self.in_error = True
             self.signal.emit('failed')
 
@@ -415,14 +420,17 @@ class OmronPLC(QObject):
             if not self.in_error:
                 return self.readMemC(address, 1)[0]
         except:
+            traceback.print_exc()
             self.in_error = True
             self.signal.emit('failed')
 
     def write(self, address, value):
         try:
             if not self.in_error:
+                print(address, value)
                 self.writeMemC(address, [value])
         except:
+            traceback.print_exc()
             self.in_error = True
             self.signal.emit('failed')
 
