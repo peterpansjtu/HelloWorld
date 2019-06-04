@@ -2,12 +2,11 @@
 
 # Form implementation generated from reading ui file 'ui_main.ui'
 #
-# Created by: PyQt5 UI code generator 5.12.2
+# Created by: PyQt5 UI code generator 5.11.3
 #
 # WARNING! All changes made in this file will be lost!
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-
 
 class Ui_Dialog(object):
     def setupUi(self, Dialog):
@@ -397,7 +396,7 @@ class Ui_Dialog(object):
         self.silicate_count_current_lcd.setGeometry(QtCore.QRect(330, 480, 201, 51))
         self.silicate_count_current_lcd.setObjectName("silicate_count_current_lcd")
         self.label_77 = QtWidgets.QLabel(self.frame)
-        self.label_77.setGeometry(QtCore.QRect(510, 420, 151, 41))
+        self.label_77.setGeometry(QtCore.QRect(510, 420, 191, 41))
         self.label_77.setObjectName("label_77")
         self.tabs.addTab(self.set_tab, "")
         self.network_tab = QtWidgets.QWidget()
@@ -584,5 +583,4 @@ class Ui_Dialog(object):
         self.lableaasd_2.setText(_translate("Dialog", "<html><head/><body><p><span style=\" color:#ff5500;\">保压初始值(Kpa):</span></p></body></html>"))
         self.lableaasd_3.setText(_translate("Dialog", "<html><head/><body><p><span style=\" color:#ff5500;\">保压结束值(Kpa):</span></p></body></html>"))
         self.lableaasd_4.setText(_translate("Dialog", "<html><head/><body><p><span style=\" color:#ff5500;\">实时负压值(Kpa):</span></p></body></html>"))
-
 

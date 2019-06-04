@@ -245,7 +245,7 @@ class OmronPlcFinsTcp():
             self.open = False
         # open socket
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.sock.settimeout(5.0)
+        self.sock.settimeout(2.0)
         try:
             self.sock.connect((self.host, self.port))
         except:

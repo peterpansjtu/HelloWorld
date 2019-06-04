@@ -8,6 +8,7 @@ import matplotlib
 from matplotlib.ticker import MultipleLocator, FormatStrFormatter
 from PyQt5.QtCore import QTimer, QCoreApplication
 from PyQt5.QtWidgets import QDialog, QApplication, QGraphicsScene, QMessageBox
+from PyQt5.QtGui import QIntValidator
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 from matplotlib.figure import Figure
 
@@ -156,6 +157,8 @@ class PressureUI(QDialog):
             with open('lable_name.txt', 'r', encoding="utf8") as f:
                 for i, name in enumerate(f):
                     self.variable_label_list[i].setText(name)
+        self.silicate_count_total_validator = QIntValidator(0, 30000, self)
+        self.ui.silicate_count_total_edit.setValidator(self.silicate_count_total_validator)
         self.setting = self.load_plc_setting()
         self.apply_plc_setting_to_ui(self.setting)
         '''
