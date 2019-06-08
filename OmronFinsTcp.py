@@ -26,6 +26,7 @@ finsErrorsStrings = {
 
 int2byte_dict = {0: b'\x00\x00',
                  70: b'\x00\x46',
+                 80: b'\x00\x50',
                  100: b'\x00\x64',
                  101: b'\x00\x65',
                  200: b'\x00\xc8',
@@ -39,7 +40,6 @@ def int_to_byte4(k):
 
 
 def int_to_byte2(k):
-    print('int_to_byte2: ', k)
     if k in int2byte_dict:
         return int2byte_dict[k]
     return k.to_bytes(2, byteorder='big')
@@ -427,7 +427,6 @@ class OmronPLC(QObject):
     def write(self, address, value):
         try:
             if not self.in_error:
-                print(address, value)
                 self.writeMemC(address, [value])
         except:
             traceback.print_exc()
