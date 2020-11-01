@@ -36,19 +36,19 @@
      <property name="geometry">
       <rect>
        <x>400</x>
-       <y>90</y>
+       <y>100</y>
        <width>591</width>
-       <height>411</height>
+       <height>401</height>
       </rect>
      </property>
     </widget>
     <widget class="QLabel" name="label">
      <property name="geometry">
       <rect>
-       <x>660</x>
-       <y>30</y>
-       <width>141</width>
-       <height>31</height>
+       <x>10</x>
+       <y>10</y>
+       <width>91</width>
+       <height>21</height>
       </rect>
      </property>
      <property name="text">
@@ -130,7 +130,7 @@
      <property name="geometry">
       <rect>
        <x>90</x>
-       <y>30</y>
+       <y>80</y>
        <width>151</width>
        <height>51</height>
       </rect>
@@ -143,7 +143,7 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>120</y>
+       <y>160</y>
        <width>31</width>
        <height>131</height>
       </rect>
@@ -156,19 +156,19 @@
      <property name="geometry">
       <rect>
        <x>50</x>
-       <y>100</y>
+       <y>140</y>
        <width>291</width>
-       <height>221</height>
+       <height>181</height>
       </rect>
      </property>
     </widget>
     <widget class="QLCDNumber" name="current_pressure_lcd">
      <property name="geometry">
       <rect>
-       <x>810</x>
-       <y>20</y>
-       <width>131</width>
-       <height>51</height>
+       <x>120</x>
+       <y>0</y>
+       <width>121</width>
+       <height>41</height>
       </rect>
      </property>
     </widget>
@@ -235,6 +235,110 @@
      </property>
      <property name="checked">
       <bool>false</bool>
+     </property>
+    </widget>
+    <widget class="QLCDNumber" name="d524_lcd">
+     <property name="geometry">
+      <rect>
+       <x>750</x>
+       <y>0</y>
+       <width>131</width>
+       <height>41</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lableaasd_4">
+     <property name="geometry">
+      <rect>
+       <x>630</x>
+       <y>10</y>
+       <width>161</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">font-size:11pt; font-weight:600; color:#ff5500;</string>
+     </property>
+     <property name="text">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#ff5500;&quot;&gt;实时负压值(Kpa):&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lableaasd">
+     <property name="geometry">
+      <rect>
+       <x>280</x>
+       <y>10</y>
+       <width>71</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">font-size:11pt; font-weight:600; color:#ff5500;</string>
+     </property>
+     <property name="text">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#ff5500;&quot;&gt;压差值(Kpa):&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+    </widget>
+    <widget class="QLCDNumber" name="max_pressure_lcd">
+     <property name="geometry">
+      <rect>
+       <x>420</x>
+       <y>0</y>
+       <width>131</width>
+       <height>41</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QLCDNumber" name="d538_lcd">
+     <property name="geometry">
+      <rect>
+       <x>420</x>
+       <y>50</y>
+       <width>131</width>
+       <height>41</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lableaasd_3">
+     <property name="geometry">
+      <rect>
+       <x>630</x>
+       <y>60</y>
+       <width>161</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">font-size:11pt; font-weight:600; color:#ff5500;</string>
+     </property>
+     <property name="text">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#ff5500;&quot;&gt;保压结束值(Kpa):&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lableaasd_2">
+     <property name="geometry">
+      <rect>
+       <x>280</x>
+       <y>60</y>
+       <width>101</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">font-size:11pt; font-weight:600; color:#ff5500;</string>
+     </property>
+     <property name="text">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#ff5500;&quot;&gt;保压初始值(Kpa):&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+    </widget>
+    <widget class="QLCDNumber" name="d540_lcd">
+     <property name="geometry">
+      <rect>
+       <x>750</x>
+       <y>50</y>
+       <width>131</width>
+       <height>41</height>
+      </rect>
      </property>
     </widget>
    </widget>
@@ -1501,32 +1605,6 @@
     <attribute name="title">
      <string/>
     </attribute>
-    <widget class="QLabel" name="lableaasd">
-     <property name="geometry">
-      <rect>
-       <x>100</x>
-       <y>80</y>
-       <width>141</width>
-       <height>31</height>
-      </rect>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">font-size:11pt; font-weight:600; color:#ff5500;</string>
-     </property>
-     <property name="text">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#ff5500;&quot;&gt;压差值(Kpa):&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-     </property>
-    </widget>
-    <widget class="QLCDNumber" name="max_pressure_lcd">
-     <property name="geometry">
-      <rect>
-       <x>260</x>
-       <y>70</y>
-       <width>131</width>
-       <height>51</height>
-      </rect>
-     </property>
-    </widget>
     <widget class="QLabel" name="label_67">
      <property name="geometry">
       <rect>
@@ -1648,84 +1726,6 @@
      </property>
      <property name="text">
       <string>保存</string>
-     </property>
-    </widget>
-    <widget class="QLCDNumber" name="d538_lcd">
-     <property name="geometry">
-      <rect>
-       <x>670</x>
-       <y>70</y>
-       <width>131</width>
-       <height>51</height>
-      </rect>
-     </property>
-    </widget>
-    <widget class="QLabel" name="lableaasd_2">
-     <property name="geometry">
-      <rect>
-       <x>490</x>
-       <y>80</y>
-       <width>161</width>
-       <height>31</height>
-      </rect>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">font-size:11pt; font-weight:600; color:#ff5500;</string>
-     </property>
-     <property name="text">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#ff5500;&quot;&gt;保压初始值(Kpa):&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-     </property>
-    </widget>
-    <widget class="QLCDNumber" name="d540_lcd">
-     <property name="geometry">
-      <rect>
-       <x>670</x>
-       <y>150</y>
-       <width>131</width>
-       <height>51</height>
-      </rect>
-     </property>
-    </widget>
-    <widget class="QLabel" name="lableaasd_3">
-     <property name="geometry">
-      <rect>
-       <x>490</x>
-       <y>160</y>
-       <width>161</width>
-       <height>31</height>
-      </rect>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">font-size:11pt; font-weight:600; color:#ff5500;</string>
-     </property>
-     <property name="text">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#ff5500;&quot;&gt;保压结束值(Kpa):&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-     </property>
-    </widget>
-    <widget class="QLCDNumber" name="d524_lcd">
-     <property name="geometry">
-      <rect>
-       <x>670</x>
-       <y>230</y>
-       <width>131</width>
-       <height>51</height>
-      </rect>
-     </property>
-    </widget>
-    <widget class="QLabel" name="lableaasd_4">
-     <property name="geometry">
-      <rect>
-       <x>490</x>
-       <y>240</y>
-       <width>161</width>
-       <height>31</height>
-      </rect>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">font-size:11pt; font-weight:600; color:#ff5500;</string>
-     </property>
-     <property name="text">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#ff5500;&quot;&gt;实时负压值(Kpa):&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
     </widget>
    </widget>
