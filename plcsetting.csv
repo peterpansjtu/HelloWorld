@@ -1,0 +1,2 @@
+pressure_var,pumping_time,pressure_hold_time,pressure_thres_low,pressure_thres_high,pressure_approx,pressure_target,silicate_count_total,pump_stop_timeout,reserve1,reserve2
+0.2,15.0,5.0,50.0,40.0,40.0,45.0,30000.0,150.0,150.0,150.0
